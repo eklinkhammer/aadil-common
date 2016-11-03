@@ -1,9 +1,0 @@
-#ifndef _CCEA_H
-#define _CCEA_H
-
-#include <random>
-
-#include <fann.h>
-#include <fann_cpp.h>
-
-#endif
