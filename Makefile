@@ -1,23 +1,25 @@
 BUILD := build
 INCLUDE := include
 SRC := src
+TEST := test
+LIB := lib
 
-# Eventually, this will be a library
-EXECUTABLE := a0
+UNIT_TESTS := cceaGTests
 
 CXX := g++ -Wall
 
-all: $(EXECUTABLE)
+all: lib
 
-run: $(EXECUTABLE)
-	./$(EXECUTABLE)
+lib: $(BUILD)/ccea.o
+	ar rcs $(LIB)/ccea.a $(BUILD)/ccea.o
 
 clean:
-	rm -rf $(BUILD) $(EXECUTABLE)
+	rm -rf $(BUILD) $(EXECUTABLE) $(TEST)/$(UNIT_TESTS) $(LIB)/ccea.a
 
-$(EXECUTABLE): $(BUILD)/ccea_main.o
-	$(CXX) $(BUILD)/ccea_main.o -o $(EXECUTABLE)
+test: lib $(TEST)/ccea_test.cpp
+	$(CXX) -I $(INCLUDE) $(TEST)/ccea_test.cpp $(LIB)/ccea.a -o $(TEST)/$(UNIT_TESTS) -lgtest
+	./$(TEST)/$(UNIT_TESTS)
 
-$(BUILD)/ccea_main.o: include/ccea.h src/ccea.cpp
+$(BUILD)/ccea.o: include/ccea.h src/ccea.cpp
 	mkdir -p $(BUILD)
-	$(CXX) -c -I $(INCLUDE)/ -I . -I $(SRC)/ $(SRC)/ccea.cpp -o $(BUILD)/ccea_main.o
+	$(CXX) -c -I $(INCLUDE)/ -I . -I $(SRC)/ $(SRC)/ccea.cpp -o $(BUILD)/ccea.o

@@ -4,7 +4,7 @@
 *  CCEA provides an API for a Cooperative Coevolutionary Algorithm based on
 *    the FANN neural network library.
 *
-*  Copyright (C) 2016 Eric Klinkhammer
+*  Copyright (C) 2016 Eric Klinkhammer and Connor Yates
 *
 *  This program is free software: you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
@@ -30,10 +30,36 @@
 #include <fann.h>
 #include <fann_cpp.h>
 
+/*
+  Configuration settings for the creation of a FANN neural network.
+ */
+struct NetworkConfig {
+  FANN::network_type_enum netType;
+  unsigned int numLayers;
+  unsigned int* layers;
+  bool randomWeights;
+  double randomMin;
+  double randomMax;
+};
+
+/*
+  Configuration settings for the CCEA
+ */
+struct CCEAConfig {
+  unsigned int numberPools;
+  unsigned int numberNetworks;
+  double percentOfWeightsToMutate;
+  double magnitudeOfMutation;
+  double percentageMaxScoreChosen;
+};
+
 class CCEA {
   
  private:
 
+  NetworkConfig networkConfig;
+  CCEAConfig cceaConfig;
+  
   std::vector<std::vector<FANN::neural_net*> > population;
   
   /*
@@ -49,7 +75,7 @@ class CCEA {
       This will return a new neural network, with 10% of the weights changed. All changed weights
         will be between 80% and 120% of their original values.
    */
-  FANN::neural_net* mutate(FANN::neural_net*, double, double);
+  static FANN::neural_net* mutate(FANN::neural_net*, double, double);
 
   /*
     Creates a 2x pool of policies from an original pool, with each original member contributing 
@@ -60,7 +86,7 @@ class CCEA {
       The percentage of weights to be mutated.
       The maximum magnitude (as a percentage of the current weight), that a weight can mutate.
    */
-  std::vector<FANN::neural_net*> createSuccessors(std::vector<FANN::neural_net*>, double, double);
+  static std::vector<FANN::neural_net*> createSuccessors(std::vector<FANN::neural_net*>, double, double);
   /*
     Creates an initial population of policies.
 
@@ -69,24 +95,56 @@ class CCEA {
         evaluation step in runGeneration.
       The number of members per pool. 
    */
-  void init_population(int,int);
+  void init_population(int,int,NetworkConfig);
   
  public:
+
+  /*
+    Full constructor.
+    This constructor should only be used when fully specifying constants AND starting from a base
+      population of neural networks.
+   */
+  CCEA (NetworkConfig, CCEAConfig, std::vector<std::vector< FANN::neural_net*> >);
+  
   /*
     Default constructor.
    */
   CCEA ();
 
   /*
-    Initializes a CCEA with a population made up of pools of neural networks, initialized to
-      random weights.
+    Initializes a CCEA with a population of neural networks. The topology of the network is 
+      suited for the rover domain. Default constants are chosen for the mutation / selection.
 
     Args:
       The number of pools.
       The number of networks per pool.
    */
-  CCEA (int,int);
+  CCEA (int, int);
+  
+  /*
+    Initializes a CCEA with a population made up of pools of neural networks, initialized to
+      random weights with the specified network configuration. Default constants are chosen for
+      the mutation / selection.
 
+    Args:
+      The number of pools.
+      The number of networks per pool.
+      The network configuration (for all networks)
+   */
+  CCEA (int, int, NetworkConfig);
+
+  /*
+    Initializes a CCEA with a population of existing neural networks. Default constants are 
+      chosen for mutation / selection.
+   */
+  CCEA (std::vector<std::vector<FANN::neural_net*> >);
+
+  /*
+    Initializes a CCEA with parameters specified and populated with networks as specified.
+    This constructor should be used to fully specify CCEA with no initial network.
+   */
+  CCEA (NetworkConfig, CCEAConfig);
+  
   /*
     Given a selection criteria, creates a mutated pool of networks and selects from them
       the best performing.
@@ -97,7 +155,7 @@ class CCEA {
       The percentage of the time the best performing neural network is selected, versus a random 
         one.
    */
-  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, double[]),double);
+  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, double[]));
 
   /*
     Returns the population of neural networks being trained.
@@ -111,7 +169,7 @@ class CCEA {
       The number of generations to train the population.
       A function to evaluate neural networks. See runGeneration.
    */
-  void trainForNGenerations(int,void(*evalNet)(std::vector<FANN::neural_net*>, double[]),double);
+  void trainForNGenerations(int,void(*evalNet)(std::vector<FANN::neural_net*>, double[]));
 
   /*
     Trains the population until the difference in the average scores between two successive runs
@@ -121,7 +179,10 @@ class CCEA {
       The error value.
       A function to evaluate neural networks. See runGeneration.
    */
-  void trainUntil(double,void(*evalNet)(std::vector<FANN::neural_net*>, double[]),double);
+  void trainUntil(double,void(*evalNet)(std::vector<FANN::neural_net*>, double[]));
+
+  
+  static int dummy();
 };
 
 #endif
