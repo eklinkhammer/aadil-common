@@ -1,6 +1,10 @@
-# aadil-common-ccea
-Autonomous Agents and Distributed Intelligence Lab Cooperative Coevolutionary Algorithm
+# aadil-common
+Eric Klinkhammer's common code for use in Autonomous Agents and Distributed Intelligence Lab.
 
 Dependency: FANN (Fast Artifical Neural Network) library installed and on path. Can find here: http://leenissen.dk/fann/wp/
 
-For documentation on use, please read comments in include file. Docs to come soon.
+For documentation on use, please read comments in include files. Docs to come soon.
+
+# ccea
+Cooperative Coevolutionary Algorithm
+Status - Working
