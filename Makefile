@@ -6,7 +6,7 @@ LIB := lib
 
 UNIT_TESTS := cceaGTests
 
-CXX := g++ -Wall
+CXX := g++ -Wall -lfann
 
 all: lib
 

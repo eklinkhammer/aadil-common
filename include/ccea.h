@@ -26,12 +26,13 @@
 #include <random>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #include <fann.h>
 #include <fann_cpp.h>
 
 /*
-  Configuration settings for the creation of a FANN neural network.
+  Configuration settings for the creation of a FANN neural network. Default for rover domain.
  */
 struct NetworkConfig {
   FANN::network_type_enum netType;
@@ -43,7 +44,7 @@ struct NetworkConfig {
 };
 
 /*
-  Configuration settings for the CCEA
+  Configuration settings for the CCEA. Default for rover domain.
  */
 struct CCEAConfig {
   unsigned int numberPools;
@@ -53,50 +54,10 @@ struct CCEAConfig {
   double percentageMaxScoreChosen;
 };
 
+
+
 class CCEA {
-  
- private:
 
-  NetworkConfig networkConfig;
-  CCEAConfig cceaConfig;
-  
-  std::vector<std::vector<FANN::neural_net*> > population;
-  
-  /*
-    Creates a mutated copy of the inputed neural network.
-
-    Args:
-      The network to be mutated
-      The percentage of weights that will be tweaked
-      The maximum magnitude of the change, as a percentage of the value being changed
-
-    Example Usage:
-      mutate(net, 0.1, 0.2)
-      This will return a new neural network, with 10% of the weights changed. All changed weights
-        will be between 80% and 120% of their original values.
-   */
-  static FANN::neural_net* mutate(FANN::neural_net*, double, double);
-
-  /*
-    Creates a 2x pool of policies from an original pool, with each original member contributing 
-      to one mutated policy.
-
-    Args:
-      The pool of networks to be mutated.
-      The percentage of weights to be mutated.
-      The maximum magnitude (as a percentage of the current weight), that a weight can mutate.
-   */
-  static std::vector<FANN::neural_net*> createSuccessors(std::vector<FANN::neural_net*>, double, double);
-  /*
-    Creates an initial population of policies.
-
-    Args:
-      The number of pools in the population. One network from each pool will be used in the
-        evaluation step in runGeneration.
-      The number of members per pool. 
-   */
-  void init_population(int,int,NetworkConfig);
-  
  public:
 
   /*
@@ -144,6 +105,8 @@ class CCEA {
     This constructor should be used to fully specify CCEA with no initial network.
    */
   CCEA (NetworkConfig, CCEAConfig);
+
+  
   
   /*
     Given a selection criteria, creates a mutated pool of networks and selects from them
@@ -155,7 +118,7 @@ class CCEA {
       The percentage of the time the best performing neural network is selected, versus a random 
         one.
    */
-  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, double[]));
+  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, std::vector<double>));
 
   /*
     Returns the population of neural networks being trained.
@@ -169,7 +132,7 @@ class CCEA {
       The number of generations to train the population.
       A function to evaluate neural networks. See runGeneration.
    */
-  void trainForNGenerations(int,void(*evalNet)(std::vector<FANN::neural_net*>, double[]));
+  void trainForNGenerations(int,void(*evalNet)(std::vector<FANN::neural_net*>, std::vector<double>));
 
   /*
     Trains the population until the difference in the average scores between two successive runs
@@ -179,10 +142,70 @@ class CCEA {
       The error value.
       A function to evaluate neural networks. See runGeneration.
    */
-  void trainUntil(double,void(*evalNet)(std::vector<FANN::neural_net*>, double[]));
+  void trainUntil(double,void(*evalNet)(std::vector<FANN::neural_net*>, std::vector<double>));
 
+    
+ private:
+
+  NetworkConfig networkConfig;
+  CCEAConfig cceaConfig;
+  
+  std::vector<std::vector<FANN::neural_net*> > population;
+  
+  /*
+    Creates a mutated copy of the inputed neural network.
+
+    Args:
+      The network to be mutated
+   */
+  FANN::neural_net* mutate(FANN::neural_net*);
+
+  /*
+    Creates a 2x pool of policies from an original pool, with each original member contributing 
+      to one mutated policy. The original list is doubled in size.
+
+    Args:
+      The pool of networks to be mutated.
+   */
+  void createSuccessors(std::vector<FANN::neural_net*>);
+
+  /*
+    Selects from the list of neural networks the ones with the highest score, with some probability of
+      selecting one at random.
+
+    Args:
+      The pool of networks to be selected from. Must be an even number (half will be selected)
+      The scores for the networks. Must be the same length as the pool array.
+   */
+  std::vector<FANN::neural_net*> cullTheWeak(std::vector<FANN::neural_net*>, std::vector<double>);
+
+  /*
+    Selects from the list of neural networks the one with the highest the score. Removes the score
+      and the network from their corresponding lists. TODO: sort two vectors in parallel.
+  */
+  FANN::neural_net* selectBest(std::vector<FANN::neural_net*>, std::vector<double>);
+
+  /*
+    Selects at random from the list of neural networks. Removes the network and the corresponding score.
+  */
+  FANN::neural_net* selectRandom(std::vector<FANN::neural_net*>, std::vector<double>);
+  
+  /*
+    Creates an initial population of policies.
+
+    Args:
+      The number of pools in the population. One network from each pool will be used in the
+        evaluation step in runGeneration.
+      The number of members per pool. 
+   */
+  std::vector<std::vector<FANN::neural_net*> > initPopulation(int,int,NetworkConfig);
+
+  void init(NetworkConfig,CCEAConfig);
+
+  void init(NetworkConfig,CCEAConfig,std::vector<std::vector<FANN::neural_net*> >);
   
   static int dummy();
+  
 };
 
 #endif

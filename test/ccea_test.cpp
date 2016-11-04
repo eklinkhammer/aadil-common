@@ -31,29 +31,30 @@ class CCEATest : public::testing::Test {
   protected:
 
   CCEA ccea;
-  
-  void callback(std::vector<FANN::neural_net*> nets, double scores[]) {
 
+  // Used for unit tests. Will increment first element in scores by 1
+  static void callback(std::vector<FANN::neural_net*> nets, std::vector<double> scores) {
+    scores[0] = scores[0] + 1;
   }
 };
 
 TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
-  
-}
+  std::vector<std::vector<FANN::neural_net*> > initalPop = ccea.getPopulation();
+  int popSizeInit = initalPop.size();
+  int poolSizeInit = initalPop[0].size();
 
-TEST_F(CCEATest,testRunGeneration_variationWithinBounds) {
+  ccea.runGeneration(callback);
 
+  std::vector<std::vector<FANN::neural_net*> > afterPop = ccea.getPopulation();
+  int popSizeAfter = afterPop.size();
+  int poolSizeAfter = afterPop[0].size();
+
+  EXPECT_EQ(popSizeInit, popSizeAfter);
+  EXPECT_EQ(poolSizeInit, poolSizeAfter);
 }
 
 TEST_F(CCEATest,testRunGeneration_callsCallback) {
 
-}
-
-
-TEST_F(CCEATest,dummy) {
-  const int expect = 5;
-  int result = ccea.dummy();
-  EXPECT_EQ(expect, result);
 }
 
 int main(int argc, char** argv) {
