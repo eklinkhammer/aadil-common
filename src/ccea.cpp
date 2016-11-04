@@ -23,11 +23,6 @@
 #include "ccea.h"
 
 
-int CCEA::dummy() {
-  return 5;
-}
-
-
 NetworkConfig getDefaultNetworkConfig() {
   NetworkConfig defaultNC;
   defaultNC.netType = FANN::LAYER;
@@ -45,7 +40,7 @@ NetworkConfig getDefaultNetworkConfig() {
 CCEAConfig getDefaultCCEAConfig() {
   CCEAConfig defaultCC;
   defaultCC.numberPools = 5;
-  defaultCC.numberNetworks = 10;
+  defaultCC.numberNetworks = 11;
   defaultCC.percentOfWeightsToMutate = 0.1;
   defaultCC.magnitudeOfMutation = 0.5;
   defaultCC.percentageMaxScoreChosen = 0.9;
@@ -92,9 +87,11 @@ CCEA::CCEA (NetworkConfig netConfig, CCEAConfig ccConfig, std::vector<std::vecto
 }
 
 
-void CCEA::runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, std::vector<double>)) {
-  for (int poolCount = 0; poolCount < this->cceaConfig.numberPools; poolCount++) {
-    createSuccessors(this->population[poolCount]);
+void CCEA::runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>&, std::vector<double>&)) {
+
+  for (auto& i: this->population) {
+    createSuccessors(i);
+    std::random_shuffle(i.begin(), i.end());
   }
 
   std::vector<std::vector<double> > allScores;
@@ -107,13 +104,23 @@ void CCEA::runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, std::vec
     }
 
     evalNet(team, teamScore);
+
+    if (team.size() != teamScore.size()) {
+      std::cout << "Evaluation method must provide score for each team member.\n";
+      exit(0);
+    }
     for (int teamWideScore = 0; teamWideScore < teamScore.size(); teamWideScore++) {
+      if (teamWideScore >= allScores.size()) {
+	std::vector<double> newV;
+	allScores.push_back(newV);
+      }
       allScores[teamWideScore].push_back(teamScore[teamWideScore]);
     }
   }
 
   for (int pools = 0; pools < this->cceaConfig.numberPools; pools++) {
-    cullTheWeak(this->population[pools], allScores[pools]);
+
+    this->population[pools] = cullTheWeak(this->population[pools], allScores[pools]);
   }
 }
 
@@ -177,16 +184,13 @@ FANN::neural_net* CCEA::mutate(FANN::neural_net* net) {
   return newNet;
 }
   
-void CCEA::createSuccessors(std::vector<FANN::neural_net*> pool) {
-  int origPoolSize = pool.size();
-  for (int i = 0; i < origPoolSize; i++) {
-    pool.push_back(mutate(pool[i]));
-  }
+void CCEA::createSuccessors(std::vector<FANN::neural_net*>& pool) {
+  for (const auto net : pool)
+    pool.push_back(mutate(net));
 }
 
-std::vector<FANN::neural_net*> CCEA::cullTheWeak(std::vector<FANN::neural_net*> networks, std::vector<double> scores) {
+std::vector<FANN::neural_net*> CCEA::cullTheWeak(std::vector<FANN::neural_net*>& networks, std::vector<double>& scores) {
   int numToSelect = networks.size() / 2;
-  
   std::vector<FANN::neural_net*> survivors;
   for (int i = 0; i < numToSelect; i++) {
     double r = (double)rand() / RAND_MAX;
@@ -200,7 +204,7 @@ std::vector<FANN::neural_net*> CCEA::cullTheWeak(std::vector<FANN::neural_net*> 
   return survivors;
 }
 
-FANN::neural_net* CCEA::selectBest(std::vector<FANN::neural_net*> nets, std::vector<double> scores) {
+FANN::neural_net* CCEA::selectBest(std::vector<FANN::neural_net*>& nets, std::vector<double>& scores) {
   double currentMax = scores[0];
   int maxIndex = 0;
   for (int i = 0; i < nets.size(); i++) {
@@ -216,7 +220,7 @@ FANN::neural_net* CCEA::selectBest(std::vector<FANN::neural_net*> nets, std::vec
   return chosen;
 }
 
-FANN::neural_net* CCEA::selectRandom(std::vector<FANN::neural_net*> nets, std::vector<double> scores) {
+FANN::neural_net* CCEA::selectRandom(std::vector<FANN::neural_net*>& nets, std::vector<double>& scores) {
   int randIndex = rand() % nets.size();
   
   FANN::neural_net* chosen = nets[randIndex];

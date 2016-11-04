@@ -33,8 +33,10 @@ class CCEATest : public::testing::Test {
   CCEA ccea;
 
   // Used for unit tests. Will increment first element in scores by 1
-  static void callback(std::vector<FANN::neural_net*> nets, std::vector<double> scores) {
-    scores[0] = scores[0] + 1;
+  static void callback(std::vector<FANN::neural_net*>& nets, std::vector<double>& scores) {
+    for (const auto net : nets) {
+      scores.push_back(0);
+    }
   }
 };
 
@@ -58,7 +60,6 @@ TEST_F(CCEATest,testRunGeneration_callsCallback) {
 }
 
 int main(int argc, char** argv) {
-  std::cout << "Hello from Test\n";
   ::testing::InitGoogleTest(&argc,argv);
   return RUN_ALL_TESTS();
 }

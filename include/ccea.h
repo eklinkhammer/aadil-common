@@ -118,7 +118,7 @@ class CCEA {
       The percentage of the time the best performing neural network is selected, versus a random 
         one.
    */
-  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>, std::vector<double>));
+  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>&, std::vector<double>&));
 
   /*
     Returns the population of neural networks being trained.
@@ -162,12 +162,12 @@ class CCEA {
 
   /*
     Creates a 2x pool of policies from an original pool, with each original member contributing 
-      to one mutated policy. The original list is doubled in size.
+      to one mutated policy. 
 
     Args:
       The pool of networks to be mutated.
    */
-  void createSuccessors(std::vector<FANN::neural_net*>);
+  void createSuccessors(std::vector<FANN::neural_net*>&);
 
   /*
     Selects from the list of neural networks the ones with the highest score, with some probability of
@@ -177,18 +177,18 @@ class CCEA {
       The pool of networks to be selected from. Must be an even number (half will be selected)
       The scores for the networks. Must be the same length as the pool array.
    */
-  std::vector<FANN::neural_net*> cullTheWeak(std::vector<FANN::neural_net*>, std::vector<double>);
+  std::vector<FANN::neural_net*> cullTheWeak(std::vector<FANN::neural_net*>&, std::vector<double>&);
 
   /*
     Selects from the list of neural networks the one with the highest the score. Removes the score
       and the network from their corresponding lists. TODO: sort two vectors in parallel.
   */
-  FANN::neural_net* selectBest(std::vector<FANN::neural_net*>, std::vector<double>);
+  FANN::neural_net* selectBest(std::vector<FANN::neural_net*>&, std::vector<double>&);
 
   /*
     Selects at random from the list of neural networks. Removes the network and the corresponding score.
   */
-  FANN::neural_net* selectRandom(std::vector<FANN::neural_net*>, std::vector<double>);
+  FANN::neural_net* selectRandom(std::vector<FANN::neural_net*>&, std::vector<double>&);
   
   /*
     Creates an initial population of policies.
@@ -203,8 +203,6 @@ class CCEA {
   void init(NetworkConfig,CCEAConfig);
 
   void init(NetworkConfig,CCEAConfig,std::vector<std::vector<FANN::neural_net*> >);
-  
-  static int dummy();
   
 };
 
