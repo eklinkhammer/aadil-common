@@ -32,14 +32,14 @@ Location Location::createLoc(double x, double y) {
   return loc;
 }
 
-Location Location::addLocations(Location* loc1, Location* loc2) {
-  double newX = loc1->x + loc2->x;
-  double newY = loc1->y + loc2->y;
+Location Location::addLocations(Location loc1, Location loc2) {
+  double newX = loc1.x + loc2.x; 
+  double newY = loc1.y + loc2.y;
   return createLoc(newX, newY);
 }
 
-double Location::distance(Location* loc1, Location* loc2) {
-  double diffX = loc2->x - loc1->x;
-  double diffY = loc2->y - loc1->y;
+double Location::distance(Location loc1, Location loc2) {
+  double diffX = loc2.x - loc1.x;
+  double diffY = loc2.y - loc1.y;
   return sqrt(diffX*diffX + diffY*diffY);
 }

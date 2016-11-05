@@ -20,6 +20,9 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
+#ifndef _ACTOR_H
+#define _ACTOR_H
+
 #include <vector>
 
 #include "fann.h"
@@ -54,3 +57,5 @@ class Actor {
  private:
   Location loc;
 };
+
+#endif

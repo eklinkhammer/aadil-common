@@ -19,6 +19,9 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
+#ifndef _LOCATION_H
+#define _LOCATION_H
+
 #include <math.h>
 class Location {
  public:
@@ -26,8 +29,10 @@ class Location {
   double y;
 
   static Location createLoc(double,double);
-  static Location addLocations(Location*,Location*);
-  static double distance(Location*,Location*);
+  static Location addLocations(Location,Location);
+  static double distance(Location,Location);
  private:
   Location (double,double);
 };
+
+#endif

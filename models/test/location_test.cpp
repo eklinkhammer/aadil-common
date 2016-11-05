@@ -31,13 +31,81 @@ class LocationTest : public::testing::Test {
 TEST_F(LocationTest,testCreateLoc) {
   double x = 3;
   double y = 2;
+  
   Location loc = Location::createLoc(x,y);
 
   EXPECT_EQ(x, loc.x);
   EXPECT_EQ(y, loc.y);
 }
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc,argv);
-  return RUN_ALL_TESTS();
+TEST_F(LocationTest, testAddLocationImmutable) {
+  double x = 1;
+  double y = 2;
+  double x2 = 3;
+  double y2 = 4;
+  Location loc1 = Location::createLoc(x,y);
+  Location loc2 = Location::createLoc(x2,y2);
+
+  Location::addLocations(loc1, loc2);
+
+  EXPECT_EQ(x, loc1.x);
+  EXPECT_EQ(y, loc1.y);
+  EXPECT_EQ(x2, loc2.x);
+  EXPECT_EQ(y2, loc2.y);
+  
+}
+
+TEST_F(LocationTest, testAddLocation) {
+  double x = 1;
+  double y = 2;
+  double x2 = 3;
+  double y2 = 4;
+  Location loc1 = Location::createLoc(x,y);
+  Location loc2 = Location::createLoc(x2,y2);
+
+  Location sum = Location::addLocations(loc1, loc2);
+
+  EXPECT_EQ(4, sum.x);
+  EXPECT_EQ(6, sum.y);
+}
+
+TEST_F(LocationTest, testDistance) {
+  double x = 0;
+  double y = 0;
+  double x2 = 3;
+  double y2 = 4;
+  Location loc1 = Location::createLoc(x,y);
+  Location loc2 = Location::createLoc(x2,y2);
+
+  double dist = Location::distance(loc1, loc2);
+
+  EXPECT_EQ(5, dist);
+}
+
+TEST_F(LocationTest, testDistanceImmutable) {
+  double x = 1;
+  double y = 2;
+  double x2 = 3;
+  double y2 = 4;
+  Location loc1 = Location::createLoc(x,y);
+  Location loc2 = Location::createLoc(x2,y2);
+
+  Location::distance(loc1, loc2);
+
+  EXPECT_EQ(x, loc1.x);
+  EXPECT_EQ(y, loc1.y);
+  EXPECT_EQ(x2, loc2.x);
+  EXPECT_EQ(y2, loc2.y);
+}
+TEST_F(LocationTest, testDistanceBackwards) {
+  double x = 0;
+  double y = 0;
+  double x2 = 3;
+  double y2 = 4;
+  Location loc1 = Location::createLoc(x,y);
+  Location loc2 = Location::createLoc(x2,y2);
+
+  double dist = Location::distance(loc2, loc1);
+
+  EXPECT_EQ(5, dist);
 }
