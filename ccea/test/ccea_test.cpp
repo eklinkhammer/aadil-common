@@ -1,5 +1,5 @@
 /*********************************************************************
-*  ccea.h
+*  ccea_test.h
 *
 *  CCEATest is a set of unit tests for the CCEA library.
 *
