@@ -2,7 +2,7 @@
 *  world.h
 *
 *  Worlds are containers for all of the actors in a simulation, responsible
-*    for allocating policies and calculating global rewards.
+*    for moving all agents and calculating global rewards.
 *
 *  World is an interface for the various domains (rover, bar) used.
 *
@@ -34,8 +34,9 @@ class World {
 
   /*
     Calculates the global reward of the world, given its current state.
+      Default is to call calculateG with current actor list.
    */
-  virtual double calculateG() { return 0;} ;
+  virtual double calculateG();
 
   /*
     Calculates the global reward of the world, given some set of actors.
@@ -69,19 +70,17 @@ class World {
     Returns all actors visible to the given actor. Generally, returns what is necessary to move
       and determine rewards. Visiblity (if applicable) is modified here. An actor is visible to itself.
    */
-  virtual std::vector<Actor*> visibleFrom(Actor*);
+  virtual std::vector<Actor*>& visibleFrom(Actor*) {return actors; };
   
   World(std::vector<Actor*>);
 
-  World createWorld();
- protected:
   bool hasBounds;
   
-  std::vector<Actor*> actors;
-  
- 
+  virtual bool inBounds(Actor*) { return true; };
 
-  virtual bool inBounds(Actor*);
+  std::vector<Actor*>& getActors();
+ private:
+  std::vector<Actor*> actors;
 };
 
 #endif

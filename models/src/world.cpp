@@ -2,7 +2,7 @@
 *  world.cpp
 *
 *  World is a container for all of the actors in a simulation, responsible
-*    for allocating policies and calculating global rewards.
+*    for timesteps and calculating global rewards.
 
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -28,8 +28,8 @@ std::vector<double> World::getAgentRewards() {
   double globalReward = this->calculateG();
   
   for (const auto& actor: this->actors) {
-    if (actor.isAgent()) {
-      rewards.push_back(actor.determineReward(this->visibleFrom(actor), globalReward));
+    if (actor->isAgent()) {
+      rewards.push_back(actor->determineReward(this->visibleFrom(actor), globalReward));
     }
   }
 
@@ -39,21 +39,29 @@ std::vector<double> World::getAgentRewards() {
 void World::timestep() {
 
   for (auto& actor: this->actors) {
-    Location init = actor.getLocation();
-    actor.move(this->visibleFrom(actor));
+    Location init = actor->getLocation();
+    actor->move(this->visibleFrom(actor));
     if (this->hasBounds && !this->inBounds(actor)) {
-      actor.setLocation(init);
+      actor->setLocation(init);
     }
   }
 
   double globalReward = this->calculateG();
   
   for (auto& actor: this->actors) {
-    actor.receiveBroadcastG(globalReward);
+    actor->receiveBroadcastG(globalReward);
   }
 }
 
 World::World(std::vector<Actor*> actors) {
   this->actors = actors;
   this->hasBounds = false;
+}
+
+std::vector<Actor*>& World::getActors() {
+  return this->actors;
+}
+
+double World::calculateG() {
+  return this->calculateG(this->getActors());
 }
