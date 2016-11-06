@@ -39,6 +39,7 @@ class RoverDomain : public World {
   // Virtual functions from World that are being overwritten by Rover Domain
   std::vector<Actor*>& visibleFrom(Actor*);
   double calculateG(std::vector<Actor*>);
+  double calculateG();
   bool inBounds(Actor*);
   
  private:
