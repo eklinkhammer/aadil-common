@@ -109,3 +109,21 @@ TEST_F(LocationTest, testDistanceBackwards) {
 
   EXPECT_EQ(5, dist);
 }
+
+TEST_F(LocationTest, testEquals) {
+  Location loc1 = Location::createLoc(1,1);
+  Location loc2 = Location::createLoc(1,1);
+  Location loc3 = Location::createLoc(2,2);
+
+  EXPECT_TRUE(Location::equals(loc1,loc2));
+  EXPECT_FALSE(Location::equals(loc1,loc3));
+}
+
+TEST_F(LocationTest, testEqualsNotReference) {
+  Location loc1 = Location::createLoc(1,1);
+  Location loc2 = Location::createLoc(1,1);
+
+  loc1.x = 4;
+
+  EXPECT_FALSE(Location::equals(loc1,loc2));
+}

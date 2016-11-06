@@ -31,6 +31,7 @@ class Location {
   static Location createLoc(double,double);
   static Location addLocations(Location,Location);
   static double distance(Location,Location);
+  static bool equals(Location,Location);
  private:
   Location (double,double);
 };

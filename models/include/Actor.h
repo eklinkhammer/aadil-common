@@ -4,6 +4,9 @@
 *  Actor is an interface for all agents / pois / other changing components
 *    of world in a simulation.
 *
+*  TODO: Identify a better way of classifying subclasses in parent class.
+*  Goal - Have a way to ask actors if they are of subclass type _
+*
 *  Copyright (C) 2016 Eric Klinkhammer
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -32,7 +35,27 @@
 
 class Actor {
  public:
-  virtual void move();
+  
+  // Getter for location
+  Location getLocation();
+
+  // setter for location
+  void setLocation(Location);
+
+  // default constructor
+  Actor();
+
+  /*
+    Whether or not this actor is an agent.
+   */
+  virtual bool isAgent();
+
+  /*
+    Whether or not this actor is a POI.
+  */
+  virtual bool isPOI();
+  
+  virtual void move(std::vector<Actor*>&) {};
 
   /*
     Calculates the reward (may be difference, global, local, etc) of an actor, given a set of other actors
@@ -41,7 +64,7 @@ class Actor {
       All actors visible to this actor.
       G - the global reward signal
    */
-  virtual double determineReward (std::vector<Actor*>&,double);
+  virtual double determineReward (std::vector<Actor*>&,double) {return 0;};
 
   /*
     If applicable, do something with the global reward. Anticipated use case: update local approximations
@@ -50,12 +73,10 @@ class Actor {
     Args:
       Broadcast value of G.
    */
-  virtual void receiveBroadcastG(double);
-
-  Location getLocation();
+  virtual void receiveBroadcastG(double) {};
   
  private:
-  Location loc;
+  Location loc = Location::createLoc(0,0);
 };
 
 #endif

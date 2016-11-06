@@ -27,6 +27,23 @@ Location Actor::getLocation() {
   return this->loc;
 }
 
-int main() {
-
+void Actor::setLocation(Location newLoc) {
+  this->loc = newLoc;
 }
+
+bool Actor::isAgent() {
+  return false;
+}
+
+bool Actor::isPOI() {
+  return false;
+}
+
+/*
+  Creates an Actor, with a default starting location of the origin. Unclear on non-test use cases.
+ */
+Actor::Actor() {
+  
+}
+
+

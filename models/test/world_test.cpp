@@ -1,8 +1,9 @@
 /*********************************************************************
-*  location.cpp
+*  world_test.cpp
 *
-*  Location stores a double tuple, plus some static useful operations on
-*    locations.
+*  Unit tests for world.
+*  TODO: Create GMock classes for actor so can test timestep, getAgent
+*    rewards.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +21,11 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#include "location.h"
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-Location::Location(double x, double y) {
-  this->x = x;
-  this->y = y;
-}
+#include "world.h"
 
-Location Location::createLoc(double x, double y) {
-  Location loc(x,y);
-  return loc;
-}
-
-Location Location::addLocations(Location loc1, Location loc2) {
-  double newX = loc1.x + loc2.x; 
-  double newY = loc1.y + loc2.y;
-  return createLoc(newX, newY);
-}
-
-double Location::distance(Location loc1, Location loc2) {
-  double diffX = loc2.x - loc1.x;
-  double diffY = loc2.y - loc1.y;
-  return sqrt(diffX*diffX + diffY*diffY);
-}
-
-bool Location::equals(Location loc1, Location loc2) {
-  return loc1.x ==loc2.x && loc1.y == loc2.y;
-}
+class WorldTest : public::testing::Test {
+  
+};
