@@ -22,8 +22,32 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+#include <vector>
+
 #include "roverdomain.h"
 
+class MockPOI : public Actor {
+public:
+  bool isPOI() {
+    return true;
+  }
+  double determineReward(std::vector<Actor*>& actors, double unused) {
+    return 1;
+  }
+
+  MockPOI() {};
+};
+
+class MockNotPOI : public Actor {
+public:
+  bool isPOI() {
+    return false;
+  }
+  double determineReward(std::vector<Actor*>& actors, double unused) {
+    return 1;
+  }
+  MockNotPOI() {};
+};
 class RoverDomainTest : public::testing::Test {
   
 };
@@ -67,4 +91,16 @@ TEST_F(RoverDomainTest, testInBoundsOnBoundary) {
   a.setLocation(onBound);
   
   EXPECT_FALSE(r.inBounds(&a));
+}
+
+TEST_F(RoverDomainTest, testCalculateG) {
+  MockPOI poi;
+  MockNotPOI notPoi;
+  std::vector<Actor*> actors;
+  actors.push_back(&poi);
+  actors.push_back(&notPoi);
+  Location bound = Location::createLoc(5,5);
+  RoverDomain r(actors, bound);
+
+  EXPECT_EQ(poi.determineReward(actors,0), r.calculateG());
 }

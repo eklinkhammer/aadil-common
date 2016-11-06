@@ -36,7 +36,7 @@ class World {
     Calculates the global reward of the world, given its current state.
       Default is to call calculateG with current actor list.
    */
-  virtual double calculateG();
+  double calculateG();
 
   /*
     Calculates the global reward of the world, given some set of actors.
