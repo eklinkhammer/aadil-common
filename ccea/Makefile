@@ -9,7 +9,7 @@ UNIT_TESTS := tests
 CXX := g++ -Wall --std=c++11 -lfann -I $(INCLUDE)
 COMPILEFLAGS := -c -I . -I $(SRC)
 
-all: lib
+all: test
 
 lib: $(BUILD)/ccea.o
 	mkdir -p $(LIB)
@@ -21,9 +21,9 @@ clean:
 tests := $(wildcard $(TEST)/*_test.cpp $(TEST)/*_test.c)
 
 test: lib
-	$(CXX) -lgtest -lgtest_main $(LIB)/ccea.a $(test) -o $(TEST)/$(UNIT_TESTS)
+	$(CXX) -lgtest -lgtest_main $(LIB)/ccea.a $(tests) -o $(TEST)/$(UNIT_TESTS)
 	./$(TEST)/$(UNIT_TESTS)
 
 $(BUILD)/ccea.o:
 	mkdir -p $(BUILD)
-	$(CXX) $(COMPILEFLAGS) $(SRC)/ccea.cpp -o $(BUILD)/ccea.o
+	$(CXX) $(COMPILEFLAGS)  -I . -I $(INCLUDE)/ccea.h -I $(INCLUDE)/net_evaluator.h $(SRC)/ccea.cpp -o $(BUILD)/ccea.o

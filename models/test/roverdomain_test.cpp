@@ -104,3 +104,22 @@ TEST_F(RoverDomainTest, testCalculateG) {
 
   EXPECT_EQ(poi.determineReward(actors,0), r.calculateG());
 }
+
+TEST_F(RoverDomainTest, testRandomLocation) {
+  Location bound = Location::createLoc(5,5);
+  std::vector<Actor*> actors;
+
+  RoverDomain r(actors, bound);
+
+  Actor a;
+  bool result = true;
+  for (int i = 0; i < 100; i++) {
+    Location randL = r.randomLocation();
+    a.setLocation(randL);
+    if (!r.inBounds(&a)) {
+      result = false;
+    }
+  }
+
+  EXPECT_TRUE(result);
+}

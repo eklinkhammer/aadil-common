@@ -10,9 +10,6 @@ UNIT_TESTS := tests
 
 all: test
 
-run: $(BUILD)/actor.o
-	$(CXX) $(BUILD)/actor.o -o run
-	./run
 
 lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o $(BUILD)/poi.o $(BUILD)/agent.o
 	mkdir -p $(LIB)

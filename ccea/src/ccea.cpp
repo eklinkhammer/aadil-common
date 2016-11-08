@@ -86,7 +86,6 @@ CCEA::CCEA (NetworkConfig netConfig, CCEAConfig ccConfig, std::vector<std::vecto
   init(netConfig, ccConfig, networks);
 }
 
-
 void CCEA::runGeneration(NetEvaluator eval) {
 
   for (auto& i: this->population) {
@@ -123,6 +122,7 @@ void CCEA::runGeneration(NetEvaluator eval) {
     this->population[pools] = cullTheWeak(this->population[pools], allScores[pools]);
   }
 }
+
 
 std::vector<std::vector<FANN::neural_net*> > CCEA::getPopulation() {
   return this->population;

@@ -75,6 +75,8 @@ class Actor {
       Broadcast value of G.
    */
   virtual void receiveBroadcastG(double) {};
+
+  virtual void setPolicy(FANN::neural_net*) {};
   
  private:
   Location loc = Location::createLoc(0,0);

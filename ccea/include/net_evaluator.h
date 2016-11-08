@@ -25,8 +25,11 @@
 #include <vector>
 
 class NetEvaluator {
-public:
-virtual std::vector<double> evaluateNNs(std::vector<FANN::neural_net*>) = 0;
+ public:
+  std::vector<double> evaluateNNs(std::vector<FANN::neural_net*>&) {
+    std::vector<double> dummy;
+    return dummy;
+  };
 };
 
 #endif

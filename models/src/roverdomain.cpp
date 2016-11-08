@@ -22,7 +22,7 @@
 
 #include "roverdomain.h"
 #include "poi.h"
-#include <iostream> // TODO remove
+#include <random>
 
 RoverDomain::RoverDomain(std::vector<Actor*> actors, Location bounds) : World (actors) {
   this->hasBounds = true;
@@ -52,4 +52,10 @@ bool RoverDomain::inBounds(Actor* actor) {
 
   return loc.x <  this->upperRightCorner.x && loc.y <  this->upperRightCorner.y
     &&   loc.x >= 0                        && loc.y >= 0;
+}
+
+Location RoverDomain::randomLocation() {
+  double x = ((double) rand() / INT_MAX) * this->upperRightCorner.x;
+  double y = ( (double) rand() / INT_MAX)  * this->upperRightCorner.y;
+  return Location::createLoc(x,y);
 }

@@ -1,8 +1,8 @@
 /*********************************************************************
-*  RoverDomain.h
+*  simNetEval.cpp
 *
-*  A rover domain is a bounded world with perfect visibility.
-*
+*  The most important class in the library. This is what enables CCEA
+*    to use the various simulators to actually train the policies.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +20,14 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _ROVERDOMAIN_H
-#define _ROVERDOMAIN_H
+#include "SimNetEval.h"
 
-#include <vector>
+SimNetEval::SimNetEval(Simulation simulator) {
+  this->sim = &simulator;
+}
 
-#include "world.h"
-
-class RoverDomain : public World {
- public:
-
-  /**
-     A Rover domain is a bounded world (dimensions specified by location).
-   **/
-  RoverDomain(std::vector<Actor*>,Location);
-
-  // Virtual functions from World that are being overwritten by Rover Domain
-  std::vector<Actor*>& visibleFrom(Actor*);
-  double calculateG(std::vector<Actor*>);
-  double calculateG();
-  bool inBounds(Actor*);
-  Location randomLocation();
-  
- private:
-  Location upperRightCorner = Location::createLoc(0,0);
-};
-
-#endif
+std::vector<double> SimNetEval::evaluateNNs(std::vector<FANN::neural_net*>& nets) {
+  this->sim->assignPolicies(nets);
+  this->sim->run();
+  return this->sim->getRewards();
+}

@@ -39,8 +39,10 @@ public:
       results.push_back(0.0);
     }
 
+    stateVar = true;
     return results;
   }
+  bool stateVar = false;
 };
 
 TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
@@ -61,5 +63,12 @@ TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
 }
 
 TEST_F(CCEATest,testRunGeneration_callsCallback) {
+  CCEA ccea;
+  MockNetEvaluator eval;
+  
+  EXPECT_FALSE(eval.stateVar);
+  
+  ccea.runGeneration(eval);
 
+  EXPECT_TRUE(eval.stateVar);
 }
