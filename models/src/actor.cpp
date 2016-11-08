@@ -43,7 +43,12 @@ bool Actor::isPOI() {
   Creates an Actor, with a default starting location of the origin. Unclear on non-test use cases.
  */
 Actor::Actor() {
-  
+  Location l = Location::createLoc(0,0);
+  this->loc = l;
+}
+
+Actor::Actor(Location location) {
+  this->loc = location;
 }
 
 

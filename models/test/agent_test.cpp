@@ -1,10 +1,8 @@
 /*********************************************************************
-*  agent.h
+*  agent_test.cpp
 *
-*  Agents are the moving actors in the world. They have policies for
-*    determining how they should change their location.
-*
-*  The base agent returns the global reward when determining its reward.
+*  Unit tests for Agent. Contains neural network, ability to query it
+*    to determine next location.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -22,32 +20,23 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _AGENT_H
-#define _AGENT_H
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-#include <vector>
+#include "agent.h"
 
-#include "actor.h"
-
-class Agent : public Actor {
- public:
-  bool isPOI() { return false; };
-  bool isAgent() { return true; };
-
-  void move(std::vector<Actor*>&);
-
-  double determineReward(std::vector<Actor*>&,double);
+class AgentTest : public::testing::Test {
   
-  Agent();
-  Agent(Location);
-
-  void setPolicy(FANN::neural_net*);
-  
- protected:
-  std::vector<double> createState(std::vector<Actor*>&);
-  virtual Location queryState(std::vector<double>);
- private:
-  FANN::neural_net* policy;
 };
 
-#endif
+TEST_F(AgentTest, testIsAgent) {
+  Agent a;
+
+  EXPECT_TRUE(a.isAgent());
+}
+
+TEST_F(AgentTest, testIsPOI) {
+  Agent a;
+
+  EXPECT_FALSE(a.isPOI());
+}

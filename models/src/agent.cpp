@@ -1,10 +1,8 @@
 /*********************************************************************
-*  agent.h
+*  agent.cpp
 *
-*  Agents are the moving actors in the world. They have policies for
-*    determining how they should change their location.
-*
-*  The base agent returns the global reward when determining its reward.
+* Agent moves in the world according to a policy. Agent is a wrapper for
+*   agents with and without global knowledge.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -22,32 +20,33 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _AGENT_H
-#define _AGENT_H
+#include "agent.h"
 
-#include <vector>
+Agent::Agent() : Actor() {
 
-#include "actor.h"
+}
 
-class Agent : public Actor {
- public:
-  bool isPOI() { return false; };
-  bool isAgent() { return true; };
+Agent::Agent(Location loc) : Actor(loc) {
 
-  void move(std::vector<Actor*>&);
+}
 
-  double determineReward(std::vector<Actor*>&,double);
-  
-  Agent();
-  Agent(Location);
+void Agent::move(std::vector<Actor*>& actors) {
 
-  void setPolicy(FANN::neural_net*);
-  
- protected:
-  std::vector<double> createState(std::vector<Actor*>&);
-  virtual Location queryState(std::vector<double>);
- private:
-  FANN::neural_net* policy;
-};
+}
 
-#endif
+double Agent::determineReward(std::vector<Actor*>& actors, double G) {
+  return G;
+}
+
+void Agent::setPolicy(FANN::neural_net* net) {
+
+}
+
+std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
+  std::vector<double> states;
+  return states;
+}
+
+Location Agent::queryState(std::vector<double>) {
+  return Location::createLoc(1,1);
+}

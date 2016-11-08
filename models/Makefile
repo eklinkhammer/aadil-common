@@ -5,7 +5,7 @@ TEST := test
 LIB := lib
 
 CXX := g++ -Wall --std=c++11 -lfann -I $(INCLUDE)
-COMPILEFLAGS = -c -I . -I $(SRC)
+COMPILEFLAGS := -c -I . -I $(SRC)
 UNIT_TESTS := tests
 
 all: test
@@ -14,7 +14,7 @@ run: $(BUILD)/actor.o
 	$(CXX) $(BUILD)/actor.o -o run
 	./run
 
-lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o
+lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o $(BUILD)/poi.o $(BUILD)/agent.o
 	mkdir -p $(LIB)
 	ar rcs $(LIB)/models.a $(wildcard $(BUILD)/*.o)
 
@@ -25,6 +25,12 @@ test: lib
 	./$(TEST)/$(UNIT_TESTS)
 clean:
 	rm -rf $(BUILD) $(LIB) $(TEST)/$(UNIT_TESTS)
+
+$(BUILD)/agent.o: $(BUILD)/actor.o
+	$(CXX) $(COMPILEFLAGS) $(SRC)/agent.cpp -o $(BUILD)/agent.o
+
+$(BUILD)/poi.o: $(BUILD)/actor.o
+	$(CXX) $(COMPILEFLAGS) $(SRC)/poi.cpp -o $(BUILD)/poi.o
 
 $(BUILD)/roverdomain.o: $(BUILD)/world.o $(INCLUDE)/roverdomain.h $(SRC)/roverdomain.cpp
 	$(CXX) $(COMPILEFLAGS) $(SRC)/roverdomain.cpp -o $(BUILD)/roverdomain.o

@@ -45,6 +45,7 @@ class Actor {
   // default constructor
   Actor();
 
+  Actor(Location);
   /*
     Whether or not this actor is an agent.
    */

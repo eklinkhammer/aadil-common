@@ -32,7 +32,7 @@ std::vector<Actor*>& RoverDomain::visibleFrom(Actor*) {
 }
 
 double RoverDomain::calculateG() {
-  return this->calculateG(this->getActors());
+  return World::calculateG();
 }
 double RoverDomain::calculateG(std::vector<Actor*> actors) {
   double globalReward = 0;
