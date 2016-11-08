@@ -87,7 +87,7 @@ CCEA::CCEA (NetworkConfig netConfig, CCEAConfig ccConfig, std::vector<std::vecto
 }
 
 
-void CCEA::runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>&, std::vector<double>&)) {
+void CCEA::runGeneration(NetEvaluator eval) {
 
   for (auto& i: this->population) {
     createSuccessors(i);
@@ -98,12 +98,12 @@ void CCEA::runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>&, std::ve
   
   for (int teamCount = 0; teamCount < this->cceaConfig.numberNetworks * 2; teamCount++) {
     std::vector<FANN::neural_net*> team;
-    std::vector<double> teamScore;
+
     for (int creatingTeam = 0; creatingTeam < this->cceaConfig.numberPools; creatingTeam++) {
       team.push_back(this->population[creatingTeam][teamCount]);
     }
 
-    evalNet(team, teamScore);
+    std::vector<double> teamScore = eval.evaluateNNs(team);
 
     if (team.size() != teamScore.size()) {
       std::cout << "Evaluation method must provide score for each team member.\n";

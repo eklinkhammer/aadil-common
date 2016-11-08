@@ -28,24 +28,29 @@
 #include "ccea.h"
 
 class CCEATest : public::testing::Test {
-  protected:
+};
 
-  CCEA ccea;
+class MockNetEvaluator : public NetEvaluator {
+public:
+  std::vector<double> evaluateNNs(std::vector<FANN::neural_net*> nets) {
+    std::vector<double> results;
 
-  // Used for unit tests. Will increment first element in scores by 1
-  static void callback(std::vector<FANN::neural_net*>& nets, std::vector<double>& scores) {
     for (const auto net : nets) {
-      scores.push_back(0);
+      results.push_back(0.0);
     }
+
+    return results;
   }
 };
 
 TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
+  CCEA ccea;
   std::vector<std::vector<FANN::neural_net*> > initalPop = ccea.getPopulation();
   int popSizeInit = initalPop.size();
   int poolSizeInit = initalPop[0].size();
 
-  ccea.runGeneration(callback);
+  MockNetEvaluator eval;
+  ccea.runGeneration(eval);
 
   std::vector<std::vector<FANN::neural_net*> > afterPop = ccea.getPopulation();
   int popSizeAfter = afterPop.size();
@@ -57,9 +62,4 @@ TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
 
 TEST_F(CCEATest,testRunGeneration_callsCallback) {
 
-}
-
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc,argv);
-  return RUN_ALL_TESTS();
 }

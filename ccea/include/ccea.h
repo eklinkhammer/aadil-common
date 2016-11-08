@@ -31,6 +31,8 @@
 #include <fann.h>
 #include <fann_cpp.h>
 
+#include "net_evaluator.h"
+
 /*
   Configuration settings for the creation of a FANN neural network. Default for rover domain.
  */
@@ -118,7 +120,7 @@ class CCEA {
       The percentage of the time the best performing neural network is selected, versus a random 
         one.
    */
-  void runGeneration(void(*evalNet)(std::vector<FANN::neural_net*>&, std::vector<double>&));
+  void runGeneration(NetEvaluator);
 
   /*
     Returns the population of neural networks being trained.
