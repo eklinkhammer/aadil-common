@@ -8,3 +8,9 @@ For documentation on use, please read comments in include files. Docs to come so
 # ccea
 Cooperative Coevolutionary Algorithm
 Status - Working
+
+# Models
+Rover domain with Actor, POI, and Agent working. TODO: Agent subclasses.
+
+# Simulation
+In progress
