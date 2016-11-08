@@ -21,6 +21,7 @@
 *********************************************************************/
 
 #include "poi.h"
+#include <iostream>
 
 POI::POI() {
   this->setLocation(Location::createLoc(0,0));
@@ -37,7 +38,13 @@ double POI::determineReward(std::vector<Actor*>& actors, double unused) {
   
   std::vector<double> distances;
 
-  std::vector<Actor*> actorsCopy = actors;
+  std::vector<Actor*> allActorsCopy = actors;
+  std::vector<Actor*> actorsCopy; // just agents
+  for (const auto actor : allActorsCopy) {
+    if (actor->isAgent()) {
+      actorsCopy.push_back(actor);
+    }
+  }
   
   for (int requiredAgents = 0; requiredAgents < this->numberRequiredAgents; requiredAgents++) {
 

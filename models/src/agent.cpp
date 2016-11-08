@@ -40,10 +40,24 @@ void Agent::move(std::vector<Actor*>& actors) {
 
   FANN::neural_net* net = this->policy;
   fann_type* output = net->run(input);
-  double* outputDouble = (double*) output;
+  fann_type fSum = output[0] + output[1];
+
+  fSum = fSum == 0 ? 1 : fSum;
+  
+  double normX = (double) (output[0] / fSum);
+  double normY = (double) (output[1] / fSum);
 
   Location current = this->getLocation();
-  Location move = Location::createLoc(outputDouble[0], outputDouble[1]);
+  Location move = Location::createLoc(normX, normY);
+  if (rand() % 100 < 5) {
+    int x = rand() % 50;
+    int y = rand() % 50;
+    double xM = (double) x / (x + y);
+    double yM = (double) y / (x + y);
+    yM = rand() % 2 == 0 ? yM : yM * -1;
+    xM = rand() % 2 == 0 ? xM : xM * -1;
+    move = Location::createLoc(xM, yM);
+  }
   this->setLocation(Location::addLocations(current, move));
 }
 
