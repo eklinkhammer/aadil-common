@@ -21,6 +21,8 @@
 *********************************************************************/
 
 #include "roverdomain.h"
+#include "poi.h"
+#include <iostream> // TODO remove
 
 RoverDomain::RoverDomain(std::vector<Actor*> actors, Location bounds) : World (actors) {
   this->hasBounds = true;

@@ -65,3 +65,15 @@ std::vector<Actor*>& World::getActors() {
 double World::calculateG() {
   return this->calculateG(this->getActors());
 }
+
+double World::calculateG(std::vector<Actor*> actors) {
+  return 0;
+}
+
+std::vector<Actor*>& World::visibleFrom(Actor* actor) {
+  return this->actors;
+}
+
+bool World::inBounds(Actor* actor) {
+  return true;
+}

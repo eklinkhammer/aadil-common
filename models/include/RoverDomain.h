@@ -1,8 +1,7 @@
 /*********************************************************************
 *  RoverDomain.h
 *
-*  A rover domain is a bounded world with perfect visibility. G is 
-*    calculated according to <PAPER HERE>.
+*  A rover domain is a bounded world with perfect visibility.
 *
 *
 *  Copyright (C) 2016 Eric Klinkhammer
