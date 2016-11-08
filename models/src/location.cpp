@@ -47,3 +47,10 @@ double Location::distance(Location loc1, Location loc2) {
 bool Location::equals(Location loc1, Location loc2) {
   return loc1.x ==loc2.x && loc1.y == loc2.y;
 }
+
+int Location::quadrant(Location loc1, Location loc2) {
+  if (loc1.x < loc2.x && loc1.y <= loc2.y) return 1;
+  if (loc1.x <= loc2.x && loc1.y > loc2.y) return 4;
+  if (loc1.x > loc2.x && loc1.y >= loc2.y) return 3;
+  return 2;
+}

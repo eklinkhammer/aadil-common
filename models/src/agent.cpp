@@ -21,6 +21,7 @@
 *********************************************************************/
 
 #include "agent.h"
+#include <iostream>
 
 Agent::Agent() : Actor() {
 
@@ -31,7 +32,19 @@ Agent::Agent(Location loc) : Actor(loc) {
 }
 
 void Agent::move(std::vector<Actor*>& actors) {
+  std::vector<double> state = this->createState(actors);
 
+  double* a = &state[0];
+
+  fann_type* input = (fann_type*) a;
+
+  FANN::neural_net* net = this->policy;
+  fann_type* output = net->run(input);
+  double* outputDouble = (double*) output;
+
+  Location current = this->getLocation();
+  Location move = Location::createLoc(outputDouble[0], outputDouble[1]);
+  this->setLocation(Location::addLocations(current, move));
 }
 
 double Agent::determineReward(std::vector<Actor*>& actors, double G) {
@@ -39,14 +52,37 @@ double Agent::determineReward(std::vector<Actor*>& actors, double G) {
 }
 
 void Agent::setPolicy(FANN::neural_net* net) {
-
+  this->policy = net;
 }
 
 std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
   std::vector<double> states;
-  return states;
-}
 
-Location Agent::queryState(std::vector<double>) {
-  return Location::createLoc(1,1);
+  for (int i = 0; i < 8; i++) {
+    states.push_back(0.0);
+  }
+
+  Location loc = this->getLocation();
+  
+  for (auto const actor : visibleActors) {
+    if (actor == this) continue;
+
+    if (!actor->isAgent() && !actor->isPOI()) continue;
+    
+    Location other = actor->getLocation();
+    double distance = Location::distance(loc, other);
+    
+    int quad = Location::quadrant(loc, other) - 1;
+    double val = 1.0;
+    
+    if (actor->isPOI()) {
+      quad += 4;
+      POI* p = (POI*) actor;
+      val = p->getValue();
+    }
+
+    states[quad] += val / distance;
+  }
+  
+  return states;
 }

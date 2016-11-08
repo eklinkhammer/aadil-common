@@ -32,6 +32,7 @@ class Location {
   static Location addLocations(Location,Location);
   static double distance(Location,Location);
   static bool equals(Location,Location);
+  static int quadrant(Location,Location);
  private:
   Location (double,double);
 };

@@ -61,6 +61,8 @@ class POI : public Actor {
        Num agents - The number of agents required to return a score. Also the number of agents counted.
    */
   void init(double, double, double, double);
+
+  double getValue() { return this->value; };
  private:
   double value;
   double minScoringDistance;

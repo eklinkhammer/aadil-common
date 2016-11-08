@@ -127,3 +127,29 @@ TEST_F(LocationTest, testEqualsNotReference) {
 
   EXPECT_FALSE(Location::equals(loc1,loc2));
 }
+
+TEST_F(LocationTest, testQuadrants) {
+  Location o = Location::createLoc(0,0);
+  Location one = Location::createLoc(1,1);
+  Location two = Location::createLoc(-1,1);
+  Location three = Location::createLoc(-1,-1);
+  Location four = Location::createLoc(1,-1);
+
+  EXPECT_EQ(1, Location::quadrant(o, one));
+  EXPECT_EQ(2, Location::quadrant(o, two));
+  EXPECT_EQ(3, Location::quadrant(o, three));
+  EXPECT_EQ(4, Location::quadrant(o, four));
+}
+
+TEST_F(LocationTest, testQuadrantBoundary) {
+  Location o = Location::createLoc(0,0);
+  Location one = Location::createLoc(1,0);
+  Location two = Location::createLoc(0,1);
+  Location three = Location::createLoc(-1,0);
+  Location four = Location::createLoc(0,-1);
+
+  EXPECT_EQ(1, Location::quadrant(o, one));
+  EXPECT_EQ(2, Location::quadrant(o, two));
+  EXPECT_EQ(3, Location::quadrant(o, three));
+  EXPECT_EQ(4, Location::quadrant(o, four));
+}

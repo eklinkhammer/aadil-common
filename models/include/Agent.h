@@ -6,6 +6,8 @@
 *
 *  The base agent returns the global reward when determining its reward.
 *
+*  Agent is assumed to always face north (for the purposes of quadrant scores).
+*
 *  Copyright (C) 2016 Eric Klinkhammer
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -28,6 +30,7 @@
 #include <vector>
 
 #include "actor.h"
+#include "poi.h"
 
 class Agent : public Actor {
  public:
@@ -45,7 +48,7 @@ class Agent : public Actor {
   
  protected:
   std::vector<double> createState(std::vector<Actor*>&);
-  virtual Location queryState(std::vector<double>);
+  virtual Location queryState(std::vector<double>) { return Location::createLoc(0,0); };
  private:
   FANN::neural_net* policy;
 };
