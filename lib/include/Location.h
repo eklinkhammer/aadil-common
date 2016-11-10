@@ -1,8 +1,7 @@
 /*********************************************************************
-*  actor.cpp
+* location.h
 *
-*  Actor is an interface for all agents / pois / other changing components
-*    of world in a simulation.
+*  Simple Tuple for Location, and some operations on locations
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,41 +19,22 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#include "actor.h"
+#ifndef _LOCATION_H
+#define _LOCATION_H
 
+#include <math.h>
+class Location {
+ public:
+  double x;
+  double y;
 
-Location Actor::getLocation() {
-  return this->loc;
-}
+  static Location createLoc(double,double);
+  static Location addLocations(Location,Location);
+  static double distance(Location,Location);
+  static bool equals(Location,Location);
+  static int quadrant(Location,Location);
+ private:
+  Location (double,double);
+};
 
-void Actor::setLocation(Location newLoc) {
-  this->loc = newLoc;
-}
-
-bool Actor::isAgent() {
-  return false;
-}
-
-bool Actor::isPOI() {
-  return false;
-}
-
-/*
-  Creates an Actor, with a default starting location of the origin. Unclear on non-test use cases.
- */
-Actor::Actor() {
-  Location l = Location::createLoc(0,0);
-  this->loc = l;
-}
-
-Actor::Actor(Location location) {
-  this->loc = location;
-}
-
-void Actor::setPolicy(FANN::neural_net* net) {
-  this->policy = net;
-}
-
-FANN::neural_net* Actor::getPolicy() {
-  return this->policy;
-}
+#endif

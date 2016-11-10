@@ -21,7 +21,7 @@
 *********************************************************************/
 
 #include "ccea.h"
-
+#include <iostream>
 
 NetworkConfig getDefaultNetworkConfig() {
   NetworkConfig defaultNC;
@@ -86,7 +86,7 @@ CCEA::CCEA (NetworkConfig netConfig, CCEAConfig ccConfig, std::vector<std::vecto
   init(netConfig, ccConfig, networks);
 }
 
-void CCEA::runGeneration(NetEvaluator eval) {
+void CCEA::runGeneration(NetEvaluator* eval) {
 
   for (auto& i: this->population) {
     createSuccessors(i);
@@ -101,8 +101,8 @@ void CCEA::runGeneration(NetEvaluator eval) {
     for (int creatingTeam = 0; creatingTeam < this->cceaConfig.numberPools; creatingTeam++) {
       team.push_back(this->population[creatingTeam][teamCount]);
     }
-
-    std::vector<double> teamScore = eval.evaluateNNs(team);
+    
+    std::vector<double> teamScore = eval->evaluateNNs(team);
 
     if (team.size() != teamScore.size()) {
       std::cout << "Evaluation method must provide score for each team member.\n";
@@ -123,6 +123,11 @@ void CCEA::runGeneration(NetEvaluator eval) {
   }
 }
 
+void CCEA::trainForNGenerations(int n, NetEvaluator* eval) {
+  for (int i = 0; i < n; i++) {
+    this->runGeneration(eval);
+  }
+}
 
 std::vector<std::vector<FANN::neural_net*> > CCEA::getPopulation() {
   return this->population;

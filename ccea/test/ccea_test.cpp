@@ -26,12 +26,15 @@
 #include <vector>
 
 #include "ccea.h"
+#include "net_evaluator.h"
 
 class CCEATest : public::testing::Test {
 };
 
-class MockNetEvaluator : public NetEvaluator {
+class MockNetEval : public NetEvaluator {
 public:
+  bool stateVar = false;
+  
   std::vector<double> evaluateNNs(std::vector<FANN::neural_net*> nets) {
     std::vector<double> results;
 
@@ -42,18 +45,19 @@ public:
     stateVar = true;
     return results;
   }
-  bool stateVar = false;
+  
 };
 
 TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
-  CCEA ccea;
+   CCEA ccea;
   std::vector<std::vector<FANN::neural_net*> > initalPop = ccea.getPopulation();
   int popSizeInit = initalPop.size();
   int poolSizeInit = initalPop[0].size();
 
-  MockNetEvaluator eval;
-  ccea.runGeneration(eval);
+  MockNetEval eval;
+  ccea.runGeneration(&eval);
 
+  
   std::vector<std::vector<FANN::neural_net*> > afterPop = ccea.getPopulation();
   int popSizeAfter = afterPop.size();
   int poolSizeAfter = afterPop[0].size();
@@ -64,11 +68,11 @@ TEST_F(CCEATest,testRunGeneration_popSizeConstant) {
 
 TEST_F(CCEATest,testRunGeneration_callsCallback) {
   CCEA ccea;
-  MockNetEvaluator eval;
-  
+  MockNetEval eval;
+  std::vector<FANN::neural_net*> nets;
   EXPECT_FALSE(eval.stateVar);
   
-  ccea.runGeneration(eval);
+  ccea.runGeneration(&eval);
 
   EXPECT_TRUE(eval.stateVar);
 }

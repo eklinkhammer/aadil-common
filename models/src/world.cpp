@@ -21,6 +21,7 @@
 *********************************************************************/
 
 #include "world.h"
+#include <iostream>
 
 std::vector<double> World::getAgentRewards() {
   std::vector<double> rewards;
@@ -47,7 +48,7 @@ void World::timestep() {
   }
 
   double globalReward = this->calculateG();
-  
+
   for (auto& actor: this->actors) {
     actor->receiveBroadcastG(globalReward);
   }

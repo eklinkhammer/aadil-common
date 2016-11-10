@@ -38,7 +38,9 @@ void Agent::move(std::vector<Actor*>& actors) {
 
   fann_type* input = (fann_type*) a;
 
-  FANN::neural_net* net = this->policy;
+  FANN::neural_net* net = this->getPolicy();
+
+  
   fann_type* output = net->run(input);
   fann_type fSum = output[0] + output[1];
 
@@ -63,10 +65,6 @@ void Agent::move(std::vector<Actor*>& actors) {
 
 double Agent::determineReward(std::vector<Actor*>& actors, double G) {
   return G;
-}
-
-void Agent::setPolicy(FANN::neural_net* net) {
-  this->policy = net;
 }
 
 std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {

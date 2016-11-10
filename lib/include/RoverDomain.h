@@ -1,8 +1,8 @@
 /*********************************************************************
-*  actor.cpp
+*  RoverDomain.h
 *
-*  Actor is an interface for all agents / pois / other changing components
-*    of world in a simulation.
+*  A rover domain is a bounded world with perfect visibility.
+*
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,41 +20,30 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#include "actor.h"
+#ifndef _ROVERDOMAIN_H
+#define _ROVERDOMAIN_H
 
+#include <vector>
 
-Location Actor::getLocation() {
-  return this->loc;
-}
+#include "world.h"
 
-void Actor::setLocation(Location newLoc) {
-  this->loc = newLoc;
-}
+class RoverDomain : public World {
+ public:
 
-bool Actor::isAgent() {
-  return false;
-}
+  /**
+     A Rover domain is a bounded world (dimensions specified by location).
+   **/
+  RoverDomain(std::vector<Actor*>,Location);
 
-bool Actor::isPOI() {
-  return false;
-}
+  // Virtual functions from World that are being overwritten by Rover Domain
+  std::vector<Actor*>& visibleFrom(Actor*);
+  double calculateG(std::vector<Actor*>);
+  double calculateG();
+  bool inBounds(Actor*);
+  Location randomLocation();
+  
+ private:
+  Location upperRightCorner = Location::createLoc(0,0);
+};
 
-/*
-  Creates an Actor, with a default starting location of the origin. Unclear on non-test use cases.
- */
-Actor::Actor() {
-  Location l = Location::createLoc(0,0);
-  this->loc = l;
-}
-
-Actor::Actor(Location location) {
-  this->loc = location;
-}
-
-void Actor::setPolicy(FANN::neural_net* net) {
-  this->policy = net;
-}
-
-FANN::neural_net* Actor::getPolicy() {
-  return this->policy;
-}
+#endif

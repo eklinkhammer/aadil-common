@@ -1,8 +1,7 @@
 /*********************************************************************
-*  actor.cpp
+*  simulation_test.cpp
 *
-*  Actor is an interface for all agents / pois / other changing components
-*    of world in a simulation.
+*  Unit tests for simulation.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,41 +19,17 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#include "actor.h"
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
+#include "simulation.h"
+#include "world.h"
+#include "roverdomain.h"
 
-Location Actor::getLocation() {
-  return this->loc;
-}
+class SimulationTest : public::testing::Test {
+  
+};
 
-void Actor::setLocation(Location newLoc) {
-  this->loc = newLoc;
-}
-
-bool Actor::isAgent() {
-  return false;
-}
-
-bool Actor::isPOI() {
-  return false;
-}
-
-/*
-  Creates an Actor, with a default starting location of the origin. Unclear on non-test use cases.
- */
-Actor::Actor() {
-  Location l = Location::createLoc(0,0);
-  this->loc = l;
-}
-
-Actor::Actor(Location location) {
-  this->loc = location;
-}
-
-void Actor::setPolicy(FANN::neural_net* net) {
-  this->policy = net;
-}
-
-FANN::neural_net* Actor::getPolicy() {
-  return this->policy;
+TEST_F(SimulationTest, testSim) {
+  Agent a;
 }

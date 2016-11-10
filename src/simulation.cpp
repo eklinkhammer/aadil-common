@@ -23,15 +23,19 @@
 *********************************************************************/
 
 #include "simulation.h"
+#include <iostream>
 
 Simulation::Simulation(SimulationConfig config) {
-  init(config);
+  this->init(config);
 }
 
 void Simulation::init(SimulationConfig config) {
   this->world = config.w;
   this->timesteps = config.timesteps;
-  this->actors = config.actors;
+
+  for (auto i: config.actors) {
+    this->actors.push_back(i);
+  }
 }
 
 void Simulation::run() {
@@ -40,6 +44,7 @@ void Simulation::run() {
   // TODO - World may in the future have non-point actors. How to handle without
   // needing to know. Possibly in setLocation? Alternatively, obstacles are set across
   // simulated runs? So, same world?
+
   for (auto actor : this->actors) {
     actor->setLocation(this->world->randomLocation());
   }
@@ -50,12 +55,13 @@ void Simulation::run() {
   }
 
   // Store G data for run
-  this->gValues.push_back(this->world->calculateG());
+  double g = this->world->calculateG();
+  this->gValues.push_back(g);
 }
 
 void Simulation::assignPolicies(std::vector<FANN::neural_net*> nets) {
   int net = 0;
-  for (auto actor : this->actors) {
+  for (auto actor : this->getActors()) {
     if (actor->isAgent()) {
       actor->setPolicy(nets[net]);
       net++;

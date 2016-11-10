@@ -21,13 +21,17 @@
 *********************************************************************/
 
 #include "SimNetEval.h"
+#include <iostream>
 
-SimNetEval::SimNetEval(Simulation simulator) {
-  this->sim = &simulator;
+SimNetEval::SimNetEval(Simulation* simulator) {
+  this->sim = simulator;
 }
 
-std::vector<double> SimNetEval::evaluateNNs(std::vector<FANN::neural_net*>& nets) {
-  this->sim->assignPolicies(nets);
-  this->sim->run();
+Simulation* SimNetEval::getSim() {
+  return this->sim;
+}
+std::vector<double> SimNetEval::evaluateNNs(std::vector<FANN::neural_net*> nets) {
+  this->getSim()->assignPolicies(nets);
+  this->getSim()->run();
   return this->sim->getRewards();
 }

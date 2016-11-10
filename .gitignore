@@ -31,3 +31,6 @@
 # Emacs files
 *.*~
 *~
+
+# Tests
+tests
