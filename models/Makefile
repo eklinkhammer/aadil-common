@@ -11,7 +11,7 @@ UNIT_TESTS := tests
 all: test
 
 
-lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o $(BUILD)/poi.o $(BUILD)/agent.o
+lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o $(BUILD)/poi.o $(BUILD)/agent.o $(BUILD)/globalAgent.o
 	mkdir -p $(LIB)
 	ar rcs $(LIB)/models.a $(wildcard $(BUILD)/*.o)
 
@@ -22,6 +22,9 @@ test: lib
 	./$(TEST)/$(UNIT_TESTS)
 clean:
 	rm -rf $(BUILD) $(LIB) $(TEST)/$(UNIT_TESTS)
+
+$(BUILD)/globalAgent.o: $(BUILD)/agent.o
+	$(CXX) $(COMPILEFLAGS) $(SRC)/globalAgent.cpp -o $(BUILD)/globalAgent.o
 
 $(BUILD)/agent.o: $(BUILD)/actor.o
 	$(CXX) $(COMPILEFLAGS) $(SRC)/agent.cpp -o $(BUILD)/agent.o
