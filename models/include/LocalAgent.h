@@ -1,8 +1,12 @@
 /*********************************************************************
-*  RoverDomain.h
+*  localAgent.h
 *
-*  A rover domain is a bounded world with perfect visibility.
+*  Agents are the moving actors in the world. They have policies for
+*    determining how they should change their location.
 *
+*  The base agent returns the global reward when determining its reward.
+*
+*  Agent is assumed to always face north (for the purposes of quadrant scores).
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +24,30 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _ROVERDOMAIN_H
-#define _ROVERDOMAIN_H
+#ifndef _LOCALAGENT_H
+#define _LOCALAGENT_H
 
 #include <vector>
 
-#include "world.h"
+#include "agent.h"
+#include "poi.h"
 
-class RoverDomain : public World {
+class LocalAgent : public Agent {
  public:
+  double determineReward(std::vector<Actor*>&,double);
+  
+  LocalAgent();
+  LocalAgent(Location);
+  LocalAgent(Location,FANN::neural_net*);
+  
+  void receiveBroadcastG(double,std::vector<Actor*>&);
 
-  /**
-     A Rover domain is a bounded world (dimensions specified by location).
-   **/
-  RoverDomain(std::vector<Actor*>,Location);
-
-  // Virtual functions from World that are being overwritten by Rover Domain
-  std::vector<Actor*>& visibleFrom(Actor*);
-  double calculateG(std::vector<Actor*>);
-  double calculateG();
-  bool inBounds(Actor*);
-  Location randomLocation();
+  FANN::neural_net* getApproximation();
+  
   
  private:
-  Location upperRightCorner = Location::createLoc(0,0);
+  FANN::neural_net* gApproximation;
+  void initNetwork();
 };
 
 #endif

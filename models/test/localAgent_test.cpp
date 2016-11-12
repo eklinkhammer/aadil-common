@@ -1,8 +1,7 @@
 /*********************************************************************
-*  SimNetEval.h
+*  localAgent_test.cpp
 *
-*  The most important class in the library. This is what enables CCEA
-*    to use the various simulators to actually train the policies.
+*  Unit tests for Local Agent.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,20 +19,19 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _SIMNETEVAL_H
-#define _SIMNETEVAL_H
+#include <math.h>
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-#include "net_evaluator.h"
-#include "simulation.h"
+#include "localAgent.h"
+#include "poi.h"
+#include "roverDomain.h"
 
-
-class SimNetEval : public NetEvaluator {
- public:
-  SimNetEval(Simulation*);
-  std::vector<double> evaluateNNs(std::vector<FANN::neural_net*>);
-  Simulation* getSim();
- private:
-  Simulation* sim;
+class LocalAgentTest : public::testing::Test {
+  
 };
 
-#endif
+TEST_F(LocalAgentTest, testDetermineRewardSingleAgent) {
+
+}
+

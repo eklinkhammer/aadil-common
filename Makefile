@@ -9,17 +9,21 @@ LIB := lib
 
 tests := $(wildcard $(TEST)/*_test.cpp $(TEST)/*_test.c)
 
-CXX := g++ -Wall --std=c++11 -lfann -I $(INCLUDE) -I $(MODEL)/$(INCLUDE) -I $(CCEA)/$(INCLUDE)
-COMPILEFLAGS := -c -I . -I $(SRC) $(CCEA)/$(LIB)/$(CCEA).a $(MODEL)/$(LIB)/$(MODEL).a
+CXX := g++ -Wall --std=c++11 -I $(INCLUDE) -I $(MODEL)/$(INCLUDE) -I $(CCEA)/$(INCLUDE)
+
+CCFLAG := -c -I . -I $(SRC)
+LIBS :=  $(CCEA)/$(LIB)/$(CCEA).a $(MODEL)/$(LIB)/$(MODEL).a
+LDFLAG := -lfann $(LIBS)
+TESTFLAG := -lgtest -lgtest_main
 UNIT_TESTS := tests
 
 all: test
 
 test: lib
-	$(CXX) -lgtest -lgtest_main $(LIB)/aadil_common.a $(tests) -o $(TEST)/$(UNIT_TESTS)
+	$(CXX) $(LDFLAG) $(TESTFLAG) $(LIB)/aadil_common.a $(tests) -o $(TEST)/$(UNIT_TESTS)
 	./$(TEST)/$(UNIT_TESTS)
 
-lib:  $(BUILD)/simulation.o $(BUILD)/simNetEval.o
+lib:  $(LIBS) $(BUILD)/simulation.o $(BUILD)/simNetEval.o
 	mkdir -p $(LIB)
 	ar rcs $(LIB)/sim.a $(wildcard $(BUILD)/*.o)
 	libtool -o $(LIB)/aadil_common.a $(LIB)/sim.a $(MODEL)/$(LIB)/$(MODEL).a $(CCEA)/$(LIB)/$(CCEA).a
@@ -28,12 +32,9 @@ lib:  $(BUILD)/simulation.o $(BUILD)/simNetEval.o
 	cp -R $(CCEA)/$(INCLUDE) $(LIB)
 	cp -R $(INCLUDE) $(LIB)
 
-$(BUILD)/simNetEval.o: $(CCEA)/$(LIB)/$(CCEA).a $(BUILD)/simulation.o
-	$(CXX) $(COMPILEFLAGS) $(SRC)/simNetEval.cpp -o $(BUILD)/simNetEval.o
-
-$(BUILD)/simulation.o: $(CCEA)/$(LIB)/$(CCEA).a $(MODEL)/$(LIB)/$(MODEL).a
+$(BUILD)/%.o: $(SRC)/%.cpp
 	mkdir -p $(BUILD)
-	$(CXX) $(COMPILEFLAGS)  $(SRC)/simulation.cpp -o $(BUILD)/simulation.o
+	$(CXX) $(CCFLAG) -o $@ $<
 
 clean:
 	cd $(MODEL) && make clean
@@ -42,6 +43,7 @@ clean:
 
 cleanl:
 	rm -rf $(BUILD) $(LIB)
+
 $(MODEL)/$(LIB)/$(MODEL).a:
 	cd $(MODEL) && make
 

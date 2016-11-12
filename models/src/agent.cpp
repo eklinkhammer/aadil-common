@@ -60,6 +60,7 @@ void Agent::move(std::vector<Actor*>& actors) {
     xM = rand() % 2 == 0 ? xM : xM * -1;
     move = Location::createLoc(xM, yM);
   }
+  this->setLastCommand(move);
   this->setLocation(Location::addLocations(current, move));
 }
 
@@ -97,4 +98,12 @@ std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
   }
   
   return states;
+}
+
+void Agent::setLastCommand(Location loc) {
+  this->lastCommand = loc;
+}
+
+Location Agent::getLastCommand() {
+  return this->lastCommand;
 }

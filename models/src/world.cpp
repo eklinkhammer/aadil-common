@@ -50,7 +50,7 @@ void World::timestep() {
   double globalReward = this->calculateG();
 
   for (auto& actor: this->actors) {
-    actor->receiveBroadcastG(globalReward);
+    actor->receiveBroadcastG(globalReward,this->actors);
   }
 }
 
