@@ -13,7 +13,7 @@ UNIT_TESTS := tests
 all: test
 
 
-lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o $(BUILD)/poi.o $(BUILD)/agent.o $(BUILD)/globalAgent.o $(BUILD)/localAgent.o
+lib: $(BUILD)/actor.o $(BUILD)/location.o $(BUILD)/world.o $(BUILD)/roverdomain.o $(BUILD)/poi.o $(BUILD)/agent.o $(BUILD)/globalAgent.o $(BUILD)/localAgent.o $(BUILD)/globalAgentDpp.o $(BUILD)/localAgentDpp.o
 	mkdir -p $(LIB)
 	ar rcs $(LIB)/models.a $(wildcard $(BUILD)/*.o)
 

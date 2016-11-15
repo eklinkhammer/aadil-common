@@ -1,8 +1,7 @@
 /*********************************************************************
-*  globalAgent.h
+* location.h
 *
-*  Global agents are agents with access to world - they can query the 
-*    world's calculateG function, as well as anything else they might need.
+*  Simple Tuple for Location, and some operations on locations
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +19,22 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _GLOBALAGENT_H
-#define _GLOBALAGENT_H
+#ifndef _LOCATION_H
+#define _LOCATION_H
 
-#include <vector>
-
-#include "agent.h"
-#include "poi.h"
-#include "world.h"
-
-class GlobalAgent : public Agent {
+#include <math.h>
+class Location {
  public:
+  double x;
+  double y;
 
-  virtual double determineReward(std::vector<Actor*>&,double);
-  
-  GlobalAgent();
-  GlobalAgent(Location);
-  GlobalAgent(Location,World*);
-
-  void setWorld(World*);
-  
- protected:
-  World* getWorld();
+  static Location createLoc(double,double);
+  static Location addLocations(Location,Location);
+  static double distance(Location,Location);
+  static bool equals(Location,Location);
+  static int quadrant(Location,Location);
  private:
-  World* w;
+  Location (double,double);
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*********************************************************************
-*  globalAgent.h
+*  SimNetEval.h
 *
-*  Global agents are agents with access to world - they can query the 
-*    world's calculateG function, as well as anything else they might need.
+*  The most important class in the library. This is what enables CCEA
+*    to use the various simulators to actually train the policies.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +20,20 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _GLOBALAGENT_H
-#define _GLOBALAGENT_H
+#ifndef _SIMNETEVAL_H
+#define _SIMNETEVAL_H
 
-#include <vector>
+#include "net_evaluator.h"
+#include "simulation.h"
 
-#include "agent.h"
-#include "poi.h"
-#include "world.h"
 
-class GlobalAgent : public Agent {
+class SimNetEval : public NetEvaluator {
  public:
-
-  virtual double determineReward(std::vector<Actor*>&,double);
-  
-  GlobalAgent();
-  GlobalAgent(Location);
-  GlobalAgent(Location,World*);
-
-  void setWorld(World*);
-  
- protected:
-  World* getWorld();
+  SimNetEval(Simulation*);
+  std::vector<double> evaluateNNs(std::vector<FANN::neural_net*>);
+  Simulation* getSim();
  private:
-  World* w;
+  Simulation* sim;
 };
 
 #endif

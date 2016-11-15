@@ -1,8 +1,5 @@
 /*********************************************************************
-*  globalAgent.h
-*
-*  Global agents are agents with access to world - they can query the 
-*    world's calculateG function, as well as anything else they might need.
+*  net_evaluator.h
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +17,16 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _GLOBALAGENT_H
-#define _GLOBALAGENT_H
+#ifndef _NETEVAL_H
+#define _NETEVAL_H
 
+#include <fann.h>
+#include <fann_cpp.h>
 #include <vector>
 
-#include "agent.h"
-#include "poi.h"
-#include "world.h"
-
-class GlobalAgent : public Agent {
+class NetEvaluator {
  public:
-
-  virtual double determineReward(std::vector<Actor*>&,double);
-  
-  GlobalAgent();
-  GlobalAgent(Location);
-  GlobalAgent(Location,World*);
-
-  void setWorld(World*);
-  
- protected:
-  World* getWorld();
- private:
-  World* w;
+  virtual std::vector<double> evaluateNNs(std::vector<FANN::neural_net*>) = 0;
 };
 
 #endif

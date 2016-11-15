@@ -1,8 +1,8 @@
 /*********************************************************************
-*  globalAgent.h
+*  globalAgentDpp_test.cpp
 *
-*  Global agents are agents with access to world - they can query the 
-*    world's calculateG function, as well as anything else they might need.
+*  Unit tests for Global Agent. TODO - unit tests depend on knowledge of
+*    POI evaluation. Must make more general.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,30 +20,32 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _GLOBALAGENT_H
-#define _GLOBALAGENT_H
+#include <math.h>
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-#include <vector>
-
-#include "agent.h"
+#include "globalAgentDpp.h"
 #include "poi.h"
-#include "world.h"
+#include "roverDomain.h"
 
-class GlobalAgent : public Agent {
- public:
-
-  virtual double determineReward(std::vector<Actor*>&,double);
+class GlobalAgentDppTest : public::testing::Test {
   
-  GlobalAgent();
-  GlobalAgent(Location);
-  GlobalAgent(Location,World*);
-
-  void setWorld(World*);
-  
- protected:
-  World* getWorld();
- private:
-  World* w;
 };
 
-#endif
+TEST_F(GlobalAgentDppTest, testDetermineRewardSingleAgent) {
+
+  GlobalAgent a (Location::createLoc(1,0));
+  POI poi (Location::createLoc(0,0));
+
+  std::vector<Actor*> actors;
+  actors.push_back(&a);
+  actors.push_back(&poi);
+
+  RoverDomain r (actors, Location::createLoc(10,10));
+
+  a.setWorld(&r);
+  
+  double reward = a.determineReward(r.visibleFrom(&a), r.calculateG());
+
+  EXPECT_EQ(r.calculateG(), reward);
+}

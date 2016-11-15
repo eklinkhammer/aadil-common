@@ -1,12 +1,7 @@
 /*********************************************************************
-*  agent.h
+*  localAgentDpp.h
 *
-*  Agents are the moving actors in the world. They have policies for
-*    determining how they should change their location.
-*
-*  The base agent returns the global reward when determining its reward.
-*
-*  Agent is assumed to always face north (for the purposes of quadrant scores).
+*  Local D++
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -24,32 +19,20 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _AGENT_H
-#define _AGENT_H
+#ifndef _LOCALAGENTDPP_H
+#define _LOCALAGENTDPP_H
 
 #include <vector>
 
-#include "actor.h"
-#include "poi.h"
+#include "localagent.h"
 
-class Agent : public Actor {
+class LocalAgentDpp : public LocalAgent {
  public:
-  bool isPOI() { return false; };
-  bool isAgent() { return true; };
-
-  virtual void move(std::vector<Actor*>&);
-
-  virtual double determineReward(std::vector<Actor*>&,double);
+  double determineReward(std::vector<Actor*>&,double);
   
-  Agent();
-  Agent(Location);
-
-  Location getLastCommand();
-  void setLastCommand(Location);
- protected:
-  std::vector<double> createState(std::vector<Actor*>&);
-  virtual Location queryState(std::vector<double>) { return Location::createLoc(0,0); };
-  Location lastCommand = Location::createLoc(0,0);
+  LocalAgentDpp();
+  LocalAgentDpp(Location);
+  LocalAgentDpp(Location,FANN::neural_net*);
 };
 
 #endif
