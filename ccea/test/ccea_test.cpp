@@ -38,7 +38,7 @@ public:
   std::vector<double> evaluateNNs(std::vector<FANN::neural_net*> nets) {
     std::vector<double> results;
 
-    for (const auto net : nets) {
+    for (int i = 0; i < nets.size(); i++) {
       results.push_back(0.0);
     }
 

@@ -41,6 +41,7 @@ class RoverDomain : public World {
   double calculateG();
   bool inBounds(Actor*);
   Location randomLocation();
+  void display();
   
  private:
   Location upperRightCorner = Location::createLoc(0,0);

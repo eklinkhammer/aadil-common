@@ -1,8 +1,5 @@
 /*********************************************************************
-*  RoverDomain.h
-*
-*  A rover domain is a bounded world with perfect visibility.
-*
+*  globalAgent.cpp
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,31 +17,40 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _ROVERDOMAIN_H
-#define _ROVERDOMAIN_H
+#include "globalAgent.h"
+#include <iostream>
 
-#include <vector>
+GlobalAgent::GlobalAgent() : Agent() {
 
-#include "world.h"
+}
 
-class RoverDomain : public World {
- public:
+GlobalAgent::GlobalAgent(Location loc) : Agent(loc) {
 
-  /**
-     A Rover domain is a bounded world (dimensions specified by location).
-   **/
-  RoverDomain(std::vector<Actor*>,Location);
+}
 
-  // Virtual functions from World that are being overwritten by Rover Domain
-  std::vector<Actor*>& visibleFrom(Actor*);
-  double calculateG(std::vector<Actor*>);
-  double calculateG();
-  bool inBounds(Actor*);
-  Location randomLocation();
-  void display();
-  
- private:
-  Location upperRightCorner = Location::createLoc(0,0);
-};
+GlobalAgent::GlobalAgent(Location loc, World* world) : Agent(loc) {
+  this->w = world;
+}
 
-#endif
+void GlobalAgent::setWorld(World* world) {
+  this->w = world;
+}
+
+World* GlobalAgent::getWorld() {
+  return this->w;
+}
+
+double GlobalAgent::determineReward(std::vector<Actor*>& actors, double g) {
+  std::vector<Actor*> others;
+
+  for (const auto actor : actors) {
+    if (actor != this) {
+      others.push_back(actor);
+    }
+  }
+
+  double counterfactual = this->getWorld()->calculateG(others);
+  return g - counterfactual;
+}
+
+

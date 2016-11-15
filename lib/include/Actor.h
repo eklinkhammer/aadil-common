@@ -74,7 +74,7 @@ class Actor {
     Args:
       Broadcast value of G.
    */
-  virtual void receiveBroadcastG(double) {};
+  virtual void receiveBroadcastG(double,std::vector<Actor*>&) {};
 
   void setPolicy(FANN::neural_net*);
   FANN::neural_net* getPolicy();

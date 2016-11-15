@@ -50,7 +50,7 @@ class World {
   virtual double calculateG(std::vector<Actor*>);
 
   // Creates a random location within the world. Generalize from Location to position later
-  Location randomLocation() { return Location::createLoc(0,0); };
+  virtual Location randomLocation() { return Location::createLoc(0,0); };
   /*
     Calculates the score of the individual agents. Used by CCEA to assign scores to policies.
 

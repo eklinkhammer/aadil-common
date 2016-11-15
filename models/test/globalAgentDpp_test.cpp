@@ -1,8 +1,8 @@
 /*********************************************************************
-*  RoverDomain.h
+*  globalAgentDpp_test.cpp
 *
-*  A rover domain is a bounded world with perfect visibility.
-*
+*  Unit tests for Global Agent. TODO - unit tests depend on knowledge of
+*    POI evaluation. Must make more general.
 *
 *  Copyright (C) 2016 Eric Klinkhammer
 *
@@ -20,31 +20,32 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _ROVERDOMAIN_H
-#define _ROVERDOMAIN_H
+#include <math.h>
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-#include <vector>
+#include "globalAgentDpp.h"
+#include "poi.h"
+#include "roverDomain.h"
 
-#include "world.h"
-
-class RoverDomain : public World {
- public:
-
-  /**
-     A Rover domain is a bounded world (dimensions specified by location).
-   **/
-  RoverDomain(std::vector<Actor*>,Location);
-
-  // Virtual functions from World that are being overwritten by Rover Domain
-  std::vector<Actor*>& visibleFrom(Actor*);
-  double calculateG(std::vector<Actor*>);
-  double calculateG();
-  bool inBounds(Actor*);
-  Location randomLocation();
-  void display();
+class GlobalAgentDppTest : public::testing::Test {
   
- private:
-  Location upperRightCorner = Location::createLoc(0,0);
 };
 
-#endif
+TEST_F(GlobalAgentDppTest, testDetermineRewardSingleAgent) {
+
+  GlobalAgent a (Location::createLoc(1,0));
+  POI poi (Location::createLoc(0,0));
+
+  std::vector<Actor*> actors;
+  actors.push_back(&a);
+  actors.push_back(&poi);
+
+  RoverDomain r (actors, Location::createLoc(10,10));
+
+  a.setWorld(&r);
+  
+  double reward = a.determineReward(r.visibleFrom(&a), r.calculateG());
+
+  EXPECT_EQ(r.calculateG(), reward);
+}

@@ -98,8 +98,8 @@ void CCEA::runGeneration(NetEvaluator* eval) {
   for (int teamCount = 0; teamCount < this->cceaConfig.numberNetworks * 2; teamCount++) {
     std::vector<FANN::neural_net*> team;
 
-    for (int creatingTeam = 0; creatingTeam < this->cceaConfig.numberPools; creatingTeam++) {
-      team.push_back(this->population[creatingTeam][teamCount]);
+    for (int agentI = 0; agentI < this->cceaConfig.numberPools; agentI++) {
+      team.push_back(this->population[agentI][teamCount]);
     }
     
     std::vector<double> teamScore = eval->evaluateNNs(team);
@@ -118,7 +118,6 @@ void CCEA::runGeneration(NetEvaluator* eval) {
   }
 
   for (int pools = 0; pools < this->cceaConfig.numberPools; pools++) {
-
     this->population[pools] = cullTheWeak(this->population[pools], allScores[pools]);
   }
 }

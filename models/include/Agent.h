@@ -37,16 +37,19 @@ class Agent : public Actor {
   bool isPOI() { return false; };
   bool isAgent() { return true; };
 
-  void move(std::vector<Actor*>&);
+  virtual void move(std::vector<Actor*>&);
 
-  double determineReward(std::vector<Actor*>&,double);
+  virtual double determineReward(std::vector<Actor*>&,double);
   
   Agent();
   Agent(Location);
-  
+
+  Location getLastCommand();
+  void setLastCommand(Location);
  protected:
   std::vector<double> createState(std::vector<Actor*>&);
   virtual Location queryState(std::vector<double>) { return Location::createLoc(0,0); };
+  Location lastCommand = Location::createLoc(0,0);
 };
 
 #endif

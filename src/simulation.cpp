@@ -46,7 +46,8 @@ void Simulation::run() {
   // simulated runs? So, same world?
 
   for (auto actor : this->actors) {
-    actor->setLocation(this->world->randomLocation());
+    Location random = this->world->randomLocation();
+    actor->setLocation(random);
   }
 
   // run simulation

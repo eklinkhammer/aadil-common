@@ -1,5 +1,5 @@
 /*********************************************************************
-*  agent.h
+*  localAgent.h
 *
 *  Agents are the moving actors in the world. They have policies for
 *    determining how they should change their location.
@@ -24,32 +24,30 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#ifndef _AGENT_H
-#define _AGENT_H
+#ifndef _LOCALAGENT_H
+#define _LOCALAGENT_H
 
 #include <vector>
 
-#include "actor.h"
+#include "agent.h"
 #include "poi.h"
 
-class Agent : public Actor {
+class LocalAgent : public Agent {
  public:
-  bool isPOI() { return false; };
-  bool isAgent() { return true; };
-
-  virtual void move(std::vector<Actor*>&);
-
   virtual double determineReward(std::vector<Actor*>&,double);
   
-  Agent();
-  Agent(Location);
+  LocalAgent();
+  LocalAgent(Location);
+  LocalAgent(Location,FANN::neural_net*);
+  
+  void receiveBroadcastG(double,std::vector<Actor*>&);
 
-  Location getLastCommand();
-  void setLastCommand(Location);
- protected:
-  std::vector<double> createState(std::vector<Actor*>&);
-  virtual Location queryState(std::vector<double>) { return Location::createLoc(0,0); };
-  Location lastCommand = Location::createLoc(0,0);
+  FANN::neural_net* getApproximation();
+  
+  
+ private:
+  FANN::neural_net* gApproximation;
+  void initNetwork();
 };
 
 #endif

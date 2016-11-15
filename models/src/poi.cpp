@@ -45,7 +45,8 @@ double POI::determineReward(std::vector<Actor*>& actors, double unused) {
       actorsCopy.push_back(actor);
     }
   }
-  
+
+  //std::cout << "Number of agents being considered by POI: " << actorsCopy.size() << "\n";
   for (int requiredAgents = 0; requiredAgents < this->numberRequiredAgents; requiredAgents++) {
 
     double min = this->maxScoringDistance;
