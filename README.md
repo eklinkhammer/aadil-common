@@ -13,7 +13,7 @@ Cooperative Coevolutionary Algorithm
 Status - Working
 
 ## Models
-Rover domain with Actor, POI, and Agent working. TODO: Agent subclasses.
+Rover domain with Actor, POI, and Agent working. For specific agent reward structures, use GlobalAgent, LocalAgent, LocalAgentDpp, and GlobalAgentDpp. (GlobalAgent calculate D using global information, local agent calculates D with an approximation of the global reward function).
 
 ## Simulation
 Continuous world and simulation complete.
