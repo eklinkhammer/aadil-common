@@ -52,4 +52,4 @@ $(CCEA)/$(LIB)/$(CCEA).a:
 	cd $(CCEA) && make
 
 $(SIM)/$(LIB)/$(SIM).a: $(MODEL)/$(LIB)/$(MODEL).a $(CCEA)/$(LIB)/$(CCEA).a
-	cd $(CCEA) && make
+	cd $(SIM) && make
