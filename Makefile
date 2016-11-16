@@ -6,6 +6,8 @@ INCLUDE := include
 SRC := src
 TEST := test
 LIB := lib
+LIBNAME := aadil_common.a
+EXEC := experiment
 
 tests := $(wildcard $(TEST)/*_test.cpp $(TEST)/*_test.c)
 
@@ -17,16 +19,22 @@ LDFLAG := -lfann $(LIBS)
 TESTFLAG := -lgtest -lgtest_main
 UNIT_TESTS := tests
 
-all: test
+all: $(EXEC)
+
+run: $(EXEC)
+	./$(EXEC)
+
+$(EXEC): lib
+	$(CXX) -lfann $(LIB)/$(LIBNAME) *.cpp -o $(EXEC)
 
 test: lib
-	$(CXX) $(LDFLAG) $(TESTFLAG) $(LIB)/aadil_common.a $(tests) -o $(TEST)/$(UNIT_TESTS)
+	$(CXX) $(LDFLAG) $(TESTFLAG) $(LIB)/$(LIBNAME) $(tests) -o $(TEST)/$(UNIT_TESTS)
 	./$(TEST)/$(UNIT_TESTS)
 
 lib:  $(LIBS) $(BUILD)/simulation.o $(BUILD)/simNetEval.o
 	mkdir -p $(LIB)
 	ar rcs $(LIB)/sim.a $(wildcard $(BUILD)/*.o)
-	libtool -o $(LIB)/aadil_common.a $(LIB)/sim.a $(MODEL)/$(LIB)/$(MODEL).a $(CCEA)/$(LIB)/$(CCEA).a
+	libtool -o $(LIB)/$(LIBNAME) $(LIB)/sim.a $(MODEL)/$(LIB)/$(MODEL).a $(CCEA)/$(LIB)/$(CCEA).a
 	mkdir -p $(LIB)/$(INCLUDE)
 	cp -R $(MODEL)/$(INCLUDE) $(LIB)
 	cp -R $(CCEA)/$(INCLUDE) $(LIB)

@@ -97,5 +97,5 @@ double LocalAgentDpp::determineReward(std::vector<Actor*>& actors, double G) {
     }
   }
 
-  return newDpp;
+  return G - D;
 }

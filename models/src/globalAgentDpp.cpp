@@ -34,7 +34,7 @@ GlobalAgentDpp::GlobalAgentDpp(Location loc, World* world) : GlobalAgent(loc, wo
 
 double GlobalAgentDpp::determineReward(std::vector<Actor*>& actors, double g) {
   std::vector<Actor*> others;
-
+  Location loc = this->getLocation();
   int agentCount = 0;
   
   for (const auto actor : actors) {
@@ -49,6 +49,8 @@ double GlobalAgentDpp::determineReward(std::vector<Actor*>& actors, double g) {
   double counterfactual = this->getWorld()->calculateG(others);
   double D = g - counterfactual;
 
+  if (D > 0) return D;
+  
   double Dpp = 0;
 
   std::vector<Actor*> copy;
@@ -57,9 +59,13 @@ double GlobalAgentDpp::determineReward(std::vector<Actor*>& actors, double g) {
   }
 
   for (int i = 1; i <= agentCount; i++) {
-    copy.push_back(this);
+    Agent a (Location::createLoc(loc.x + 0.05, loc.y + 0.05));
+    copy.push_back(&a);
     double withAdditionalAgent = this->getWorld()->calculateG(copy);
-    Dpp += (withAdditionalAgent / i);
+    Dpp = (withAdditionalAgent - g) / i;
+    if (Dpp > 0) {
+      return Dpp;
+    }
   }
 
   return (Dpp > D) ? Dpp : D;
