@@ -1,23 +1,9 @@
-#include <iostream>
-#include <vector>
+#include "experiment.h"
 
-#include "simulation.h"
-#include "ccea.h"
-#include "simNetEval.h"
-
-// When runner an experiment, include the appropriate header files for the specific agents and
-// pois that you are using (ie, dpplocal agent)
-#include "poi.h"
-#include "roverdomain.h"
-#include "globalAgent.h"
-#include "localAgent.h"
-#include "globalAgentDpp.h"
-#include "localAgentDpp.h"
-
-const int NUM_AGENTS = 12;
+const int NUM_AGENTS = 4;
 const int NUM_POIS = 14;
 const double SIZE_WORLD = 30.0;
-const int POOL_SIZE = 30;
+const int POOL_SIZE = 10;
 const int GENS = 30;
 
 int main() {
@@ -58,20 +44,13 @@ int main() {
   simConfig.actors = actors;
   simConfig.w = &rWorld;
 
-  int coupling[8];
-  coupling[0] = 1;
-  coupling[1] = 2;
-  coupling[2] = 3;
-  coupling[3] = 4;
-  coupling[4] = 5;
-  coupling[5] = 6;
-  coupling[6] = 7;
-  coupling[7] = 8;
+  std::vector<int> coupling = couplingArray(8);
+  
   Simulation sim(simConfig);
   SimNetEval evaluator (&sim);
   CCEA ccea(NUM_AGENTS, POOL_SIZE);
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < coupling.size(); i++) {
     for (auto actor : actors) {
       if (actor->isPOI()) {
 	POI* poi = (POI*) actor;
@@ -115,4 +94,12 @@ int main() {
   // }
   return 0;
   
+}
+
+std::vector<int> couplingArray(int n) {
+  std::vector<int> coupling;
+  for (int i = 1; i <= n; i++) {
+    coupling.push_back(i);
+  }
+  return coupling;
 }
