@@ -4,8 +4,11 @@
 const int NUM_AGENTS = 4;
 const int NUM_POIS = 14;
 const double SIZE_WORLD = 30.0;
+const double POI_RANGE_PERCENT_WORLD = 0.2;
 const int GENS = 30;
 const Reward r = LocalDpp;
+const int SIM_TIMESTEPS = 50;
+const int MAX_COUPLING = 8;
 
 // Network Config
 const FANN::network_type_enum NET_TYPE = FANN::LAYER;
@@ -38,11 +41,11 @@ int main() {
 
   // Initialize Simulation
   SimulationConfig simConfig;
-  simConfig.timesteps = 50;
+  simConfig.timesteps = SIM_TIMESTEPS;
   simConfig.actors = actors;
   simConfig.w = &rWorld;
 
-  std::vector<int> coupling = couplingArray(8);
+  std::vector<int> coupling = couplingArray(MAX_COUPLING);
   
   Simulation sim(simConfig);
   SimNetEval evaluator (&sim);
@@ -58,7 +61,7 @@ int main() {
     for (auto actor : actors) {
       if (actor->isPOI()) {
 	POI* poi = (POI*) actor;
-	poi->init(1, 0.1, 4.0, coupling[i]);
+	poi->init(1, 0.1, SIZE_WORLD*POI_RANGE_PERCENT_WORLD, coupling[i]);
       }
     }
         
