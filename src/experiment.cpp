@@ -1,43 +1,41 @@
 #include "experiment.h"
 
+// Experiment Parameters
 const int NUM_AGENTS = 4;
 const int NUM_POIS = 14;
 const double SIZE_WORLD = 30.0;
-const int POOL_SIZE = 10;
 const int GENS = 30;
+const Reward r = LocalDpp;
+
+// Network Config
+const FANN::network_type_enum NET_TYPE = FANN::LAYER;
+const unsigned int NUM_LAYERS = 3;
+const unsigned int INPUT_LAYER = 8;
+const unsigned int HIDDEN_LAYER = 10;
+const unsigned int OUTPUT_LAYER = 2;
+unsigned int LAYERS[NUM_LAYERS] = {INPUT_LAYER, HIDDEN_LAYER, OUTPUT_LAYER};
+const bool RANDOM_WEIGHTS = true;
+const double RANDOM_MIN = -10;
+const double RANDOM_MAX = 10;
+
+// CCEA Config
+const unsigned int NUMBER_POOLS = (unsigned int) NUM_AGENTS;
+const unsigned int NUMBER_NETWORKS = 10;
+const double PERCENT_TO_MUTATE = 0.4;
+const double MAG_MUTATION = 0.5;
+const double PERCENT_BEST_CHOSEN = 0.9;
+
 
 int main() {
   // Initialize set of actors
   std::vector<Actor*> actors;
-  
-  
-  for (int i = 0; i < NUM_AGENTS; i++) {
-    //GlobalAgentDpp* x = new GlobalAgentDpp(); // D++
-    LocalAgentDpp* x = new LocalAgentDpp(); // Local D++
-    //GlobalAgent* x = new GlobalAgent(); // D
-    //Agent* x = new Agent(); // G
-    actors.push_back(x);
-  }
+  addAgents(actors,r,NUM_AGENTS);
+  addPois(actors, NUM_POIS);
 
-  for (int i = 0; i < NUM_POIS; i++) {
-    POI* poi = new POI();
-    poi->init(1, 0.1, 4.0, 5);
-    actors.push_back(poi);
-  }
-
-    // Initialize World
+  // Initialize World
   RoverDomain rWorld(actors, Location::createLoc(SIZE_WORLD, SIZE_WORLD));
+  setWorld(actors,r,&rWorld);
 
-  int s = 0;
-  if (s == 1) {
-    for (auto actor : actors) {
-      if (actor->isAgent()) {
-	GlobalAgentDpp* gAgent = (GlobalAgentDpp*) actor;
-	gAgent->setWorld(&rWorld);
-      }
-    }
-  }
-  
   // Initialize Simulation
   SimulationConfig simConfig;
   simConfig.timesteps = 50;
@@ -48,7 +46,13 @@ int main() {
   
   Simulation sim(simConfig);
   SimNetEval evaluator (&sim);
-  CCEA ccea(NUM_AGENTS, POOL_SIZE);
+
+
+  
+  NetworkConfig netConfig = createNetworkConfig(NET_TYPE, NUM_LAYERS, LAYERS, RANDOM_WEIGHTS, RANDOM_MIN, RANDOM_MAX);
+  CCEAConfig cceaConfig = createCCEAConfig(NUMBER_POOLS, NUMBER_NETWORKS, PERCENT_TO_MUTATE, MAG_MUTATION, PERCENT_BEST_CHOSEN);
+  
+  CCEA ccea(netConfig, cceaConfig);
 
   for (int i = 0; i < coupling.size(); i++) {
     for (auto actor : actors) {
@@ -102,4 +106,73 @@ std::vector<int> couplingArray(int n) {
     coupling.push_back(i);
   }
   return coupling;
+}
+
+Actor* getAppropriateActor(Reward reward) {
+  if (reward == LocalDpp) {
+    LocalAgentDpp* agent = new LocalAgentDpp();
+    return agent;
+  } else if (reward == LocalD) {
+    LocalAgent* agent = new LocalAgent();
+    return agent;
+  } else if (reward == Dpp) {
+    GlobalAgentDpp* agent = new GlobalAgentDpp();
+    return agent;
+  } else if (reward == G) {
+    Agent* agent = new Agent();
+    return agent;
+  } else if (reward == D) {
+    GlobalAgent* agent = new GlobalAgent();
+    return agent;
+  } else {
+    throw new std::exception();
+  }
+}
+
+void addPois(std::vector<Actor*>& actors, int numberPois) {
+  for (int i = 0; i < numberPois; i++) {
+    POI* poi = new POI();
+    poi->init(1, 0.1, 10.0, 1);
+    actors.push_back(poi);
+  }
+}
+
+void addAgents(std::vector<Actor*>& actors, Reward reward, int numberAgents) {
+  for (int i = 0; i < numberAgents; i++) {
+    actors.push_back(getAppropriateActor(reward));
+  }
+}
+
+void setWorld(std::vector<Actor*>& actors, Reward reward, World* world) {
+  if (reward != D && reward != Dpp) {
+    return;
+  }
+  
+  for (auto actor : actors) {
+    if (actor->isAgent()) {
+      GlobalAgent* gAgent = (GlobalAgent*) actor;
+      gAgent->setWorld(world);
+    }
+  }
+}
+
+CCEAConfig createCCEAConfig(unsigned int numPools, unsigned int numNetworks, double percentWeights, double magMut, double percentChosen) {
+  CCEAConfig config;
+  config.numberPools = numPools;
+  config.numberNetworks = numNetworks;
+  config.percentOfWeightsToMutate = percentWeights;
+  config.magnitudeOfMutation = magMut;
+  config.percentageMaxScoreChosen = percentChosen;
+  return config;
+}
+
+NetworkConfig createNetworkConfig(FANN::network_type_enum type, unsigned int numberLayers, unsigned int* layers, bool rWeights, double rMin, double rMax) {
+  NetworkConfig config;
+  config.netType = type;
+  config.numLayers = numberLayers;
+  config.layers = layers;
+  config.randomWeights = rWeights;
+  config.randomMin = rMin;
+  config.randomMax = rMax;
+  return config;
 }
