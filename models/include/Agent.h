@@ -40,6 +40,7 @@ class Agent : public Actor {
   virtual void move(std::vector<Actor*>&);
 
   virtual double determineReward(std::vector<Actor*>&,double);
+  virtual std::string toString() { return "A";};
   
   Agent();
   Agent(Location);
