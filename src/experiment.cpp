@@ -6,7 +6,7 @@ const int NUM_POIS = 25;
 const double SIZE_WORLD = 100.0;
 const double POI_RANGE_PERCENT_WORLD = 0.25;
 const int GENS = 1000;
-const Reward r = LocalDpp;
+const Reward r = G;
 const int SIM_TIMESTEPS = 50;
 const int MAX_COUPLING = 8;
 const int STAT_RUNS = 50;
@@ -73,6 +73,7 @@ int main() {
 	std::cout << "Average G score after " << STAT_RUNS << " statistical runs: ";
 	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
 	std::cout << score << "\n";
+	rWorld.display();
       } else {
 	//std::cout << rWorld.calculateG() << "\n";
       }
