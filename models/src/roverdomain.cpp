@@ -77,17 +77,17 @@ void RoverDomain::display() {
   for (int i = 0; i < this->upperRightCorner.y; i++) {
     std::cout << "|";
     for (int j = 0; j < this->upperRightCorner.x; j++) {
+      bool actorPresent = false;
       for (const auto actor : actorsByRow[i]) {
 	Location actorLoc = actor->getLocation();
 	if (floor(actorLoc.x) == j) {
-	  if (actor->isAgent()) {
-	    std::cout << "A";
-	  } else if (actor->isPOI()) {
-	    std::cout << "P";
-	  } else {
-	    std::cout << "_";
-	  }
+	  std::cout << actor->toString();
+	  actorPresent = true;
 	}
+      }
+
+      if (!actorPresent) {
+	std::cout << "_";
       }
     }
     std:: cout << "|\n";

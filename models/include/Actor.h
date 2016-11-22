@@ -76,6 +76,8 @@ class Actor {
    */
   virtual void receiveBroadcastG(double,std::vector<Actor*>&) {};
 
+  virtual std::string toString() {return ""; };
+  
   void setPolicy(FANN::neural_net*);
   FANN::neural_net* getPolicy();
  private:

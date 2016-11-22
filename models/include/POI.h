@@ -51,6 +51,7 @@ class POI : public Actor {
   POI();
   POI(Location);
 
+  virtual std::string toString() { return "P"; };
   /*
      Initializes the private variables of a POI.
 
