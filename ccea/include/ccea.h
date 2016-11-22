@@ -146,11 +146,19 @@ class CCEA {
    */
   void trainUntil(double,void(*evalNet)(std::vector<FANN::neural_net*>, std::vector<double>));
 
+  /*
+    Returns the set of networks that performed the best in the previous generation. The set 
+      contains one network from each of the pools.
+   */
+  std::vector<FANN::neural_net*> getCurrentBestTeam();
     
  private:
 
   NetworkConfig networkConfig;
   CCEAConfig cceaConfig;
+
+  std::vector<FANN::neural_net*> currentBestTeam;
+
   
   std::vector<std::vector<FANN::neural_net*> > population;
   
@@ -188,6 +196,12 @@ class CCEA {
   FANN::neural_net* selectBest(std::vector<FANN::neural_net*>&, std::vector<double>&);
 
   /*
+    Selects from the list of neural networks the one with the highest the score. Does not modify 
+      either vector. Returns copies.
+  */
+  FANN::neural_net* copyBest(std::vector<FANN::neural_net*>&, std::vector<double>&);
+
+  /*
     Selects at random from the list of neural networks. Removes the network and the corresponding score.
   */
   FANN::neural_net* selectRandom(std::vector<FANN::neural_net*>&, std::vector<double>&);
@@ -203,9 +217,6 @@ class CCEA {
   std::vector<std::vector<FANN::neural_net*> > initPopulation(int,int,NetworkConfig);
 
   void init(NetworkConfig,CCEAConfig);
-
   void init(NetworkConfig,CCEAConfig,std::vector<std::vector<FANN::neural_net*> >);
-  
 };
-
 #endif

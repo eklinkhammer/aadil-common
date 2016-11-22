@@ -116,10 +116,15 @@ void CCEA::runGeneration(NetEvaluator* eval) {
       allScores[teamWideScore].push_back(teamScore[teamWideScore]);
     }
   }
-
+  this->currentBestTeam.clear();
   for (int pools = 0; pools < this->cceaConfig.numberPools; pools++) {
     this->population[pools] = cullTheWeak(this->population[pools], allScores[pools]);
+    this->currentBestTeam.push_back(copyBest(this->population[pools], allScores[pools]));
   }
+}
+
+std::vector<FANN::neural_net*> CCEA::getCurrentBestTeam() {
+  return this->currentBestTeam;
 }
 
 void CCEA::trainForNGenerations(int n, NetEvaluator* eval) {
@@ -221,6 +226,20 @@ FANN::neural_net* CCEA::selectBest(std::vector<FANN::neural_net*>& nets, std::ve
   FANN::neural_net* chosen = nets[maxIndex];
   nets.erase(nets.begin() + maxIndex);
   scores.erase(scores.begin() + maxIndex);
+  return chosen;
+}
+
+FANN::neural_net* CCEA::copyBest(std::vector<FANN::neural_net*>& nets, std::vector<double>& scores) {
+  double currentMax = scores[0];
+  int maxIndex = 0;
+  for (int i = 0; i < nets.size(); i++) {
+    if (scores[i] > currentMax) {
+      currentMax = scores[i];
+      maxIndex = i;
+    }
+  }
+  
+  FANN::neural_net* chosen = nets[maxIndex];
   return chosen;
 }
 

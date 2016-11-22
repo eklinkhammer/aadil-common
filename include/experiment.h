@@ -38,6 +38,7 @@ void addAgents(std::vector<Actor*>&,Reward,int);
  */
 void setWorld(std::vector<Actor*>&,Reward,World*);
 
+double statisticalRuns(CCEA,SimNetEval,int,World*);
 
 CCEAConfig createCCEAConfig(unsigned int, unsigned int, double, double, double);
 

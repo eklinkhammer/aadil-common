@@ -1,31 +1,32 @@
 #include "experiment.h"
 
 // Experiment Parameters
-const int NUM_AGENTS = 4;
-const int NUM_POIS = 14;
-const double SIZE_WORLD = 30.0;
-const double POI_RANGE_PERCENT_WORLD = 0.2;
-const int GENS = 30;
+const int NUM_AGENTS = 15;
+const int NUM_POIS = 25;
+const double SIZE_WORLD = 100.0;
+const double POI_RANGE_PERCENT_WORLD = 0.25;
+const int GENS = 1000;
 const Reward r = LocalDpp;
 const int SIM_TIMESTEPS = 50;
 const int MAX_COUPLING = 8;
+const int STAT_RUNS = 50;
 
 // Network Config
 const FANN::network_type_enum NET_TYPE = FANN::LAYER;
 const unsigned int NUM_LAYERS = 3;
 const unsigned int INPUT_LAYER = 8;
-const unsigned int HIDDEN_LAYER = 10;
+const unsigned int HIDDEN_LAYER = 14;
 const unsigned int OUTPUT_LAYER = 2;
 unsigned int LAYERS[NUM_LAYERS] = {INPUT_LAYER, HIDDEN_LAYER, OUTPUT_LAYER};
 const bool RANDOM_WEIGHTS = true;
-const double RANDOM_MIN = -10;
-const double RANDOM_MAX = 10;
+const double RANDOM_MIN = -15;
+const double RANDOM_MAX = 15;
 
 // CCEA Config
 const unsigned int NUMBER_POOLS = (unsigned int) NUM_AGENTS;
 const unsigned int NUMBER_NETWORKS = 10;
-const double PERCENT_TO_MUTATE = 0.4;
-const double MAG_MUTATION = 0.5;
+const double PERCENT_TO_MUTATE = 0.5;
+const double MAG_MUTATION = 1.1;
 const double PERCENT_BEST_CHOSEN = 0.9;
 
 
@@ -67,13 +68,18 @@ int main() {
         
     for (int j = 0; j < GENS; j++) {
       ccea.runGeneration(&evaluator);
-      if (j % 10 == 0) {
+      if (j % 100 == 0) {
 	std::cout << "Coupling of: " << coupling[i] << " Generation: " << j << "\n";
+	std::cout << "Average G score after " << STAT_RUNS << " statistical runs: ";
+	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
+	std::cout << score << "\n";
+      } else {
+	//std::cout << rWorld.calculateG() << "\n";
       }
-      std::cout << rWorld.calculateG() << "\n";
     }
     
   }
+
   // Simulation sim(simConfig);
   
   // Initialize Network Evaluator
@@ -178,4 +184,16 @@ NetworkConfig createNetworkConfig(FANN::network_type_enum type, unsigned int num
   config.randomMin = rMin;
   config.randomMax = rMax;
   return config;
+}
+
+double statisticalRuns(CCEA ccea, SimNetEval simNetEval, int runs, World* world) {
+  double score = 0;
+
+  std::vector<FANN::neural_net*> bestTeam = ccea.getCurrentBestTeam();
+  for (int i = 0; i < runs; i++) {
+    simNetEval.evaluateNNs(bestTeam);
+    score += world->calculateG();
+  }
+
+  return score / runs;
 }
