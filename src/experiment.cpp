@@ -1,93 +1,86 @@
-#include <iostream>
-#include <vector>
+#include "experiment.h"
 
-#include "simulation.h"
-#include "ccea.h"
-#include "simNetEval.h"
+// Experiment Parameters
+const int NUM_AGENTS = 15;
+const int NUM_POIS = 25;
+const double SIZE_WORLD = 100.0;
+const double POI_RANGE_PERCENT_WORLD = 0.25;
+const int GENS = 1000;
+const Reward r = G;
+const int SIM_TIMESTEPS = 50;
+const int MAX_COUPLING = 8;
+const int STAT_RUNS = 50;
 
-// When runner an experiment, include the appropriate header files for the specific agents and
-// pois that you are using (ie, dpplocal agent)
-#include "poi.h"
-#include "roverdomain.h"
-#include "globalAgent.h"
-#include "localAgent.h"
-#include "globalAgentDpp.h"
-#include "localAgentDpp.h"
+// Network Config
+const FANN::network_type_enum NET_TYPE = FANN::LAYER;
+const unsigned int NUM_LAYERS = 3;
+const unsigned int INPUT_LAYER = 8;
+const unsigned int HIDDEN_LAYER = 14;
+const unsigned int OUTPUT_LAYER = 2;
+unsigned int LAYERS[NUM_LAYERS] = {INPUT_LAYER, HIDDEN_LAYER, OUTPUT_LAYER};
+const bool RANDOM_WEIGHTS = true;
+const double RANDOM_MIN = -15;
+const double RANDOM_MAX = 15;
 
-const int NUM_AGENTS = 12;
-const int NUM_POIS = 14;
-const double SIZE_WORLD = 30.0;
-const int POOL_SIZE = 30;
-const int GENS = 30;
+// CCEA Config
+const unsigned int NUMBER_POOLS = (unsigned int) NUM_AGENTS;
+const unsigned int NUMBER_NETWORKS = 10;
+const double PERCENT_TO_MUTATE = 0.5;
+const double MAG_MUTATION = 1.1;
+const double PERCENT_BEST_CHOSEN = 0.9;
+
 
 int main() {
   // Initialize set of actors
   std::vector<Actor*> actors;
-  
-  
-  for (int i = 0; i < NUM_AGENTS; i++) {
-    //GlobalAgentDpp* x = new GlobalAgentDpp(); // D++
-    LocalAgentDpp* x = new LocalAgentDpp(); // Local D++
-    //GlobalAgent* x = new GlobalAgent(); // D
-    //Agent* x = new Agent(); // G
-    actors.push_back(x);
-  }
+  addAgents(actors,r,NUM_AGENTS);
+  addPois(actors, NUM_POIS);
 
-  for (int i = 0; i < NUM_POIS; i++) {
-    POI* poi = new POI();
-    poi->init(1, 0.1, 4.0, 5);
-    actors.push_back(poi);
-  }
-
-    // Initialize World
+  // Initialize World
   RoverDomain rWorld(actors, Location::createLoc(SIZE_WORLD, SIZE_WORLD));
+  setWorld(actors,r,&rWorld);
 
-  int s = 0;
-  if (s == 1) {
-    for (auto actor : actors) {
-      if (actor->isAgent()) {
-	GlobalAgentDpp* gAgent = (GlobalAgentDpp*) actor;
-	gAgent->setWorld(&rWorld);
-      }
-    }
-  }
-  
   // Initialize Simulation
   SimulationConfig simConfig;
-  simConfig.timesteps = 50;
+  simConfig.timesteps = SIM_TIMESTEPS;
   simConfig.actors = actors;
   simConfig.w = &rWorld;
 
-  int coupling[8];
-  coupling[0] = 1;
-  coupling[1] = 2;
-  coupling[2] = 3;
-  coupling[3] = 4;
-  coupling[4] = 5;
-  coupling[5] = 6;
-  coupling[6] = 7;
-  coupling[7] = 8;
+  std::vector<int> coupling = couplingArray(MAX_COUPLING);
+  
   Simulation sim(simConfig);
   SimNetEval evaluator (&sim);
-  CCEA ccea(NUM_AGENTS, POOL_SIZE);
 
-  for (int i = 0; i < 8; i++) {
+
+  
+  NetworkConfig netConfig = createNetworkConfig(NET_TYPE, NUM_LAYERS, LAYERS, RANDOM_WEIGHTS, RANDOM_MIN, RANDOM_MAX);
+  CCEAConfig cceaConfig = createCCEAConfig(NUMBER_POOLS, NUMBER_NETWORKS, PERCENT_TO_MUTATE, MAG_MUTATION, PERCENT_BEST_CHOSEN);
+  
+  CCEA ccea(netConfig, cceaConfig);
+
+  for (int i = 0; i < coupling.size(); i++) {
     for (auto actor : actors) {
       if (actor->isPOI()) {
 	POI* poi = (POI*) actor;
-	poi->init(1, 0.1, 4.0, coupling[i]);
+	poi->init(1, 0.1, SIZE_WORLD*POI_RANGE_PERCENT_WORLD, coupling[i]);
       }
     }
         
     for (int j = 0; j < GENS; j++) {
       ccea.runGeneration(&evaluator);
-      if (j % 10 == 0) {
+      if (j % 100 == 0) {
 	std::cout << "Coupling of: " << coupling[i] << " Generation: " << j << "\n";
+	std::cout << "Average G score after " << STAT_RUNS << " statistical runs: ";
+	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
+	std::cout << score << "\n";
+	rWorld.display();
+      } else {
+	//std::cout << rWorld.calculateG() << "\n";
       }
-      std::cout << rWorld.calculateG() << "\n";
     }
     
   }
+
   // Simulation sim(simConfig);
   
   // Initialize Network Evaluator
@@ -115,4 +108,93 @@ int main() {
   // }
   return 0;
   
+}
+
+std::vector<int> couplingArray(int n) {
+  std::vector<int> coupling;
+  for (int i = 1; i <= n; i++) {
+    coupling.push_back(i);
+  }
+  return coupling;
+}
+
+Actor* getAppropriateActor(Reward reward) {
+  if (reward == LocalDpp) {
+    LocalAgentDpp* agent = new LocalAgentDpp();
+    return agent;
+  } else if (reward == LocalD) {
+    LocalAgent* agent = new LocalAgent();
+    return agent;
+  } else if (reward == Dpp) {
+    GlobalAgentDpp* agent = new GlobalAgentDpp();
+    return agent;
+  } else if (reward == G) {
+    Agent* agent = new Agent();
+    return agent;
+  } else if (reward == D) {
+    GlobalAgent* agent = new GlobalAgent();
+    return agent;
+  } else {
+    throw new std::exception();
+  }
+}
+
+void addPois(std::vector<Actor*>& actors, int numberPois) {
+  for (int i = 0; i < numberPois; i++) {
+    POI* poi = new POI();
+    poi->init(1, 0.1, 10.0, 1);
+    actors.push_back(poi);
+  }
+}
+
+void addAgents(std::vector<Actor*>& actors, Reward reward, int numberAgents) {
+  for (int i = 0; i < numberAgents; i++) {
+    actors.push_back(getAppropriateActor(reward));
+  }
+}
+
+void setWorld(std::vector<Actor*>& actors, Reward reward, World* world) {
+  if (reward != D && reward != Dpp) {
+    return;
+  }
+  
+  for (auto actor : actors) {
+    if (actor->isAgent()) {
+      GlobalAgent* gAgent = (GlobalAgent*) actor;
+      gAgent->setWorld(world);
+    }
+  }
+}
+
+CCEAConfig createCCEAConfig(unsigned int numPools, unsigned int numNetworks, double percentWeights, double magMut, double percentChosen) {
+  CCEAConfig config;
+  config.numberPools = numPools;
+  config.numberNetworks = numNetworks;
+  config.percentOfWeightsToMutate = percentWeights;
+  config.magnitudeOfMutation = magMut;
+  config.percentageMaxScoreChosen = percentChosen;
+  return config;
+}
+
+NetworkConfig createNetworkConfig(FANN::network_type_enum type, unsigned int numberLayers, unsigned int* layers, bool rWeights, double rMin, double rMax) {
+  NetworkConfig config;
+  config.netType = type;
+  config.numLayers = numberLayers;
+  config.layers = layers;
+  config.randomWeights = rWeights;
+  config.randomMin = rMin;
+  config.randomMax = rMax;
+  return config;
+}
+
+double statisticalRuns(CCEA ccea, SimNetEval simNetEval, int runs, World* world) {
+  double score = 0;
+
+  std::vector<FANN::neural_net*> bestTeam = ccea.getCurrentBestTeam();
+  for (int i = 0; i < runs; i++) {
+    simNetEval.evaluateNNs(bestTeam);
+    score += world->calculateG();
+  }
+
+  return score / runs;
 }

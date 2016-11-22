@@ -39,7 +39,7 @@ public:
     std::vector<double> results;
 
     for (int i = 0; i < nets.size(); i++) {
-      results.push_back(0.0);
+      results.push_back(i);
     }
 
     stateVar = true;
@@ -75,4 +75,17 @@ TEST_F(CCEATest,testRunGeneration_callsCallback) {
   ccea.runGeneration(&eval);
 
   EXPECT_TRUE(eval.stateVar);
+}
+
+TEST_F(CCEATest, testCurrentBestTeam) {
+  CCEA ccea;
+  MockNetEval eval;
+
+  std::vector<FANN::neural_net*> currentBest = ccea.getCurrentBestTeam();
+  EXPECT_EQ(0, currentBest.size());
+
+  ccea.runGeneration(&eval);
+
+  // 5 is the default number of pools. The best team returns the best network per pool.
+  EXPECT_EQ(5, ccea.getCurrentBestTeam().size());
 }
