@@ -83,7 +83,7 @@ TEST_F(AgentTest, testCreateStateAgent) {
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
-    EXPECT_EQ(1.0/sqrt(2), state[0]);
+    EXPECT_TRUE(0.5 - state[0] < 0.1 && state[0] - 0.5 < 0.1);
     EXPECT_EQ(0, state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
@@ -112,7 +112,7 @@ TEST_F(AgentTest, testCreateStatePOI) {
     EXPECT_EQ(0, state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
-    EXPECT_EQ(5.0/sqrt(2), state[4]);
+    EXPECT_TRUE(2.5 - state[4] < 0.1 && state[4] - 2.5 < 0.1);
     EXPECT_EQ(0, state[5]);
     EXPECT_EQ(0, state[6]);
     EXPECT_EQ(0, state[7]);
@@ -133,7 +133,7 @@ TEST_F(AgentTest, testCreateStateMultipleAgents) {
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
-    EXPECT_EQ(2.0/sqrt(2), state[0]);
+    EXPECT_TRUE(1 - state[0] < 0.1 && state[0] - 1 < 0.1);
     EXPECT_EQ(0, state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
@@ -159,8 +159,8 @@ TEST_F(AgentTest, testCreateStateOrientation) {
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
-    EXPECT_EQ(1.0/sqrt(2), state[0]);
-    EXPECT_EQ(1.0/sqrt(2), state[1]);
+    EXPECT_TRUE(0.5 -  state[0] < 0.1 && state[0] - 0.5 < 0.01);
+    EXPECT_TRUE(0.5 - state[1] < 0.1 && state[1] - 0.5 < 0.01);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
     EXPECT_EQ(0, state[4]);

@@ -49,8 +49,15 @@ void Agent::move(std::vector<Actor*>& actors) {
   double normX = (double) (output[0] / fSum);
   double normY = (double) (output[1] / fSum);
 
+  // Neural network will always output a positive value between 0 and 1
+  normX = 2 * normX - 1;
+  normY = 2 * normY - 1;
+
   Location current = this->getLocation();
   Location move = Location::createLoc(normX, normY);
+  /*for (auto s : state) std::cout << s << " ";
+  std::cout << "\n";
+  std::cout << normX << ", " << normY << "\n";*/
   if (rand() % 100 < 5) {
     int x = rand() % 50;
     int y = rand() % 50;
@@ -94,7 +101,7 @@ std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
       val = p->getValue();
     }
 
-    states[quad] += val / distance;
+    states[quad] += val / (distance * distance);
   }
   
   return states;

@@ -1,12 +1,12 @@
 #include "experiment.h"
 
 // Experiment Parameters
-const int NUM_AGENTS = 15;
-const int NUM_POIS = 25;
+const int NUM_AGENTS = 20;
+const int NUM_POIS = 40;
 const double SIZE_WORLD = 100.0;
 const double POI_RANGE_PERCENT_WORLD = 0.25;
-const int GENS = 1000;
-const Reward r = G;
+const int GENS = 10000;
+const Reward r = LocalDpp;
 const int SIM_TIMESTEPS = 50;
 const int MAX_COUPLING = 8;
 const int STAT_RUNS = 50;
@@ -15,22 +15,25 @@ const int STAT_RUNS = 50;
 const FANN::network_type_enum NET_TYPE = FANN::LAYER;
 const unsigned int NUM_LAYERS = 3;
 const unsigned int INPUT_LAYER = 8;
-const unsigned int HIDDEN_LAYER = 14;
+const unsigned int HIDDEN_LAYER = 9;
 const unsigned int OUTPUT_LAYER = 2;
 unsigned int LAYERS[NUM_LAYERS] = {INPUT_LAYER, HIDDEN_LAYER, OUTPUT_LAYER};
 const bool RANDOM_WEIGHTS = true;
-const double RANDOM_MIN = -15;
-const double RANDOM_MAX = 15;
+const double RANDOM_MIN = -10;
+const double RANDOM_MAX = 10;
 
 // CCEA Config
 const unsigned int NUMBER_POOLS = (unsigned int) NUM_AGENTS;
 const unsigned int NUMBER_NETWORKS = 10;
-const double PERCENT_TO_MUTATE = 0.5;
-const double MAG_MUTATION = 1.1;
+const double PERCENT_TO_MUTATE = 0.4;
+const double MAG_MUTATION = 0.75;
 const double PERCENT_BEST_CHOSEN = 0.9;
 
 
 int main() {
+
+  // Bootstrapping both policies and approximations
+  
   // Initialize set of actors
   std::vector<Actor*> actors;
   addAgents(actors,r,NUM_AGENTS);
@@ -52,13 +55,17 @@ int main() {
   SimNetEval evaluator (&sim);
 
 
-  
+
+
   NetworkConfig netConfig = createNetworkConfig(NET_TYPE, NUM_LAYERS, LAYERS, RANDOM_WEIGHTS, RANDOM_MIN, RANDOM_MAX);
   CCEAConfig cceaConfig = createCCEAConfig(NUMBER_POOLS, NUMBER_NETWORKS, PERCENT_TO_MUTATE, MAG_MUTATION, PERCENT_BEST_CHOSEN);
   
   CCEA ccea(netConfig, cceaConfig);
 
+  std::vector<std::vector<double> > gValues;
   for (int i = 0; i < coupling.size(); i++) {
+
+    std::vector<double> scores;
     for (auto actor : actors) {
       if (actor->isPOI()) {
 	POI* poi = (POI*) actor;
@@ -69,43 +76,105 @@ int main() {
     for (int j = 0; j < GENS; j++) {
       ccea.runGeneration(&evaluator);
       if (j % 100 == 0) {
-	std::cout << "Coupling of: " << coupling[i] << " Generation: " << j << "\n";
-	std::cout << "Average G score after " << STAT_RUNS << " statistical runs: ";
 	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
-	std::cout << score << "\n";
-	rWorld.display();
-      } else {
-	//std::cout << rWorld.calculateG() << "\n";
+	scores.push_back(score);
       }
     }
-    
+
+    gValues.push_back(scores);
   }
 
-  // Simulation sim(simConfig);
-  
-  // Initialize Network Evaluator
-  //SimNetEval evaluator (&sim);
+  std::cout << "Bootstrapping both. Coupling 1 -> 8 \n";
+  for (const auto v : gValues) {
+    std::cout << "Scores: \n";
+    for (const auto score : v) {
+      std::cout << score << " ";
+    }
+    std::cout << "\n";
+  }
+
+  // Just bootstrapping approximation
+  actors.empty();
+  addAgents(actors,r,NUM_AGENTS);
+  addPois(actors, NUM_POIS);
+
+
+  gValues.empty();
+  for (int i = 0; i < coupling.size(); i++) {
+    netConfig = createNetworkConfig(NET_TYPE, NUM_LAYERS, LAYERS, RANDOM_WEIGHTS, RANDOM_MIN, RANDOM_MAX);
+    cceaConfig = createCCEAConfig(NUMBER_POOLS, NUMBER_NETWORKS, PERCENT_TO_MUTATE, MAG_MUTATION, PERCENT_BEST_CHOSEN);
+    
+    CCEA ccea1(netConfig, cceaConfig);
+    std::vector<double> scores;
+    for (auto actor : actors) {
+      if (actor->isPOI()) {
+	POI* poi = (POI*) actor;
+	poi->init(1, 0.1, SIZE_WORLD*POI_RANGE_PERCENT_WORLD, coupling[i]);
+      }
+    }
+        
+    for (int j = 0; j < GENS; j++) {
+      ccea1.runGeneration(&evaluator);
+      if (j % 100 == 0) {
+	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
+	scores.push_back(score);
+      }
+    }
+
+    gValues.push_back(scores);
+  }
+
+  std::cout << "Bootstrapping just approximation. Coupling 1 -> 8 \n";
+  for (const auto v : gValues) {
+    std::cout << "Scores: \n";
+    for (const auto score : v) {
+      std::cout << score << " ";
+    }
+    std::cout << "\n";
+  }
 
   
-  // Intialize CCEA
-  // CCEA can be initialized with all parameters needed for network or CCEA configuration
-  // Additionally, can be constructed from a base population of neural networks.
-  // Note - these policies are separate from the actor's state, so there are two ways to
-  // carry policy information between trials - one by saving the networks for a new CCEA and
-  // also to reuse the same agents. The former does transfer learning, the latter allows for
-  // G approximation.
-  // CCEA ccea(NUM_AGENTS, POOL_SIZE);
+  // Just bootstrapping policy
+
+
+  netConfig = createNetworkConfig(NET_TYPE, NUM_LAYERS, LAYERS, RANDOM_WEIGHTS, RANDOM_MIN, RANDOM_MAX);
+  cceaConfig = createCCEAConfig(NUMBER_POOLS, NUMBER_NETWORKS, PERCENT_TO_MUTATE, MAG_MUTATION, PERCENT_BEST_CHOSEN);
+    
+  CCEA ccea2(netConfig, cceaConfig);
+    
+  gValues.empty();
+  for (int i = 0; i < coupling.size(); i++) {
+    actors.empty();
+    addAgents(actors,r,NUM_AGENTS);
+    addPois(actors, NUM_POIS);
+    std::vector<double> scores;
+    for (auto actor : actors) {
+      if (actor->isPOI()) {
+	POI* poi = (POI*) actor;
+	poi->init(1, 0.1, SIZE_WORLD*POI_RANGE_PERCENT_WORLD, coupling[i]);
+      }
+    }
+        
+    for (int j = 0; j < GENS; j++) {
+      ccea2.runGeneration(&evaluator);
+      if (j % 100 == 0) {
+	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
+	scores.push_back(score);
+      }
+    }
+
+    gValues.push_back(scores);
+  }
+
+  std::cout << "Bootstrapping just approximation. Coupling 1 -> 8 \n";
+  for (const auto v : gValues) {
+    std::cout << "Scores: \n";
+    for (const auto score : v) {
+      std::cout << score << " ";
+    }
+    std::cout << "\n";
+  }
   
-  // Run CCEA with Network Evaluator
-  //ccea.trainForNGenerations(GENS, &evaluator);
-  //for (int i = 0; i < GENS; i++) {
-  //  ccea.runGeneration(&evaluator);
-  //  if (i % 10 == 0) {
-  //    std::cout << "Generation: " << i << "\n";
-  //  }
-  //  std::cout << rWorld.calculateG() << "\n";
-    //rWorld.display();
-  // }
   return 0;
   
 }

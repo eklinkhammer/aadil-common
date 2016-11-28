@@ -78,7 +78,7 @@ double LocalAgentDpp::determineReward(std::vector<Actor*>& actors, double G) {
 
   // TODO parametarize this value
   for (int i = 1; i < 10; i++) {
-    Agent a (Location::createLoc(loc.x + 0.05, loc.y + 0.05));
+    Agent a (Location::createLoc(loc.x + 0.001, loc.y + 0.001));
     actorCopy.push_back(&a);
     state = this->createState(actorCopy);
     state.push_back(previousCommand.x);
