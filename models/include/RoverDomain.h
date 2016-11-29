@@ -24,6 +24,7 @@
 #define _ROVERDOMAIN_H
 
 #include <vector>
+#include <limits>
 
 #include "world.h"
 

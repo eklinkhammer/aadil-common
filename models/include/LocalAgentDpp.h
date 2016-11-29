@@ -24,7 +24,7 @@
 
 #include <vector>
 
-#include "localagent.h"
+#include "localAgent.h"
 
 class LocalAgentDpp : public LocalAgent {
  public:

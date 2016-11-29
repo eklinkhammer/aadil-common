@@ -20,7 +20,7 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#include "roverdomain.h"
+#include "roverDomain.h"
 #include "poi.h"
 #include <random>
 #include <math.h>

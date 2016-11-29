@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "ccea.h"
-#include "net_evaluator.h"
+#include "netEvaluator.h"
 
 class CCEATest : public::testing::Test {
 };

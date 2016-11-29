@@ -25,12 +25,12 @@
 #define _SIM_H
 
 #include "ccea.h"
-#include "net_evaluator.h"
+#include "netEvaluator.h"
 #include "world.h"
 #include "poi.h"
 #include "agent.h"
 #include <random>
-#include "roverdomain.h"
+#include "roverDomain.h"
 
 class SimulationConfig {
  public:
