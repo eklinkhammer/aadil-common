@@ -5,11 +5,11 @@ const int NUM_AGENTS = 20;
 const int NUM_POIS = 40;
 const double SIZE_WORLD = 100.0;
 const double POI_RANGE_PERCENT_WORLD = 0.25;
-const int GENS = 10000;
-const Reward r = G;
+const int GENS = 1000;
+const Reward r = LocalDpp;
 const int SIM_TIMESTEPS = 50;
 const int MAX_COUPLING = 8;
-const int STAT_RUNS = 50;
+const int STAT_RUNS = 100;
 
 // Network Config
 const FANN::network_type_enum NET_TYPE = FANN::LAYER;
@@ -62,10 +62,10 @@ int main() {
   
   CCEA ccea(netConfig, cceaConfig);
 
-  std::vector<std::vector<double> > gValues;
+  std::vector<std::vector<std::vector<double> > > gValues;
   for (int i = 0; i < coupling.size(); i++) {
 
-    std::vector<double> scores;
+    std::vector<std::vector<double> >scores;
     for (auto actor : actors) {
       if (actor->isPOI()) {
 	POI* poi = (POI*) actor;
@@ -75,10 +75,10 @@ int main() {
         
     for (int j = 0; j < GENS; j++) {
       ccea.runGeneration(&evaluator);
-      if (j % 100 == 0) {
-	double score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
+      //if (j % 100 == 0) {
+      std::vector<double> score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
 	scores.push_back(score);
-      }
+	// }
     }
 
     gValues.push_back(scores);
@@ -88,7 +88,7 @@ int main() {
   for (const auto v : gValues) {
     std::cout << "Scores: \n";
     for (const auto score : v) {
-      std::cout << score << " ";
+      std::cout << "(" << score[0] << "," << score[1] << ") ";
     }
     std::cout << "\n";
   }
@@ -256,14 +256,29 @@ NetworkConfig createNetworkConfig(FANN::network_type_enum type, unsigned int num
   return config;
 }
 
-double statisticalRuns(CCEA ccea, SimNetEval simNetEval, int runs, World* world) {
-  double score = 0;
-
+std::vector<double> statisticalRuns(CCEA ccea, SimNetEval simNetEval, int runs, World* world) {
+  double average = 0;
+  std::vector<double> scores;
+  
   std::vector<FANN::neural_net*> bestTeam = ccea.getCurrentBestTeam();
   for (int i = 0; i < runs; i++) {
     simNetEval.evaluateNNs(bestTeam);
-    score += world->calculateG();
+    double score = world->calculateG();
+    average += score;
+    scores.push_back(score);
   }
 
-  return score / runs;
+  average /= runs;
+
+  double variance = 0;
+  for (const auto s : scores) {
+    variance += (average - s) * (average - s);
+  }
+
+  double std_dv = sqrt(variance / runs);
+
+  std::vector<double> result;
+  result.push_back(average);
+  result.push_back(std_dv);
+  return result;
 }

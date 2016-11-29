@@ -38,7 +38,10 @@ void addAgents(std::vector<Actor*>&,Reward,int);
  */
 void setWorld(std::vector<Actor*>&,Reward,World*);
 
-double statisticalRuns(CCEA,SimNetEval,int,World*);
+/*
+  Returns the average and standard dev of x number of statistical runs
+ */
+std::vector<double> statisticalRuns(CCEA,SimNetEval,int,World*);
 
 CCEAConfig createCCEAConfig(unsigned int, unsigned int, double, double, double);
 
