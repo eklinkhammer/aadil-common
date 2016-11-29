@@ -31,7 +31,7 @@
 #include <fann.h>
 #include <fann_cpp.h>
 
-#include "net_evaluator.h"
+#include "netEvaluator.h"
 
 /*
   Configuration settings for the creation of a FANN neural network. Default for rover domain.

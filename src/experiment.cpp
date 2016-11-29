@@ -6,7 +6,7 @@ const int NUM_POIS = 40;
 const double SIZE_WORLD = 100.0;
 const double POI_RANGE_PERCENT_WORLD = 0.25;
 const int GENS = 10000;
-const Reward r = LocalDpp;
+const Reward r = G;
 const int SIM_TIMESTEPS = 50;
 const int MAX_COUPLING = 8;
 const int STAT_RUNS = 50;
@@ -92,7 +92,7 @@ int main() {
     }
     std::cout << "\n";
   }
-
+  /*
   // Just bootstrapping approximation
   actors.empty();
   addAgents(actors,r,NUM_AGENTS);
@@ -176,7 +176,7 @@ int main() {
   }
   
   return 0;
-  
+  */
 }
 
 std::vector<int> couplingArray(int n) {

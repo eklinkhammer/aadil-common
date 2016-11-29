@@ -2,7 +2,7 @@
 #define _EXP_H
 
 #include "poi.h"
-#include "roverdomain.h"
+#include "roverDomain.h"
 #include "localAgentDpp.h"
 #include "globalAgent.h"
 #include "globalAgentDpp.h"

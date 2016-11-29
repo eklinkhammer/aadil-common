@@ -23,7 +23,7 @@
 #ifndef _SIMNETEVAL_H
 #define _SIMNETEVAL_H
 
-#include "net_evaluator.h"
+#include "netEvaluator.h"
 #include "simulation.h"
 
 
