@@ -91,7 +91,10 @@ std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
     
     Location other = actor->getLocation();
     double distance = Location::distance(loc, other);
-    
+
+    if (distance < 1) {
+      distance = 1;
+    }
     int quad = Location::quadrant(loc, other) - 1;
     double val = 1.0;
     
