@@ -31,6 +31,19 @@
 # Emacs files
 *.*~
 *~
+*#
+.#*
 
 # Tests
 tests
+Testing
+
+# CMake Related Files
+*.cmake
+CMakeCache.txt
+CMakeFiles
+*.cmake
+cmake
+
+# Libs
+lib

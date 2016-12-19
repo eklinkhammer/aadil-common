@@ -29,12 +29,16 @@ add_executable(${EXEC} src/experiment.cpp)
 target_include_directories(${EXEC} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} include)
 target_link_libraries(${EXEC} fann)
 
-## Link created libraries
-target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/ccea/libccea.a)
-target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/models/libmodels.a)
-target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/simulation/libsimulation.a)
+add_dependencies(${EXEC} ccea)
+add_dependencies(${EXEC} models)
+add_dependencies(${EXEC} simulation)
 
 ## Include libraries
 target_include_directories (${EXEC} PUBLIC ccea/include)
 target_include_directories (${EXEC} PUBLIC models/include)
 target_include_directories (${EXEC} PUBLIC simulation/include)
+
+## Link created libraries
+target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/ccea/libccea.a)
+target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/models/libmodels.a)
+target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/simulation/libsimulation.a)
