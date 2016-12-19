@@ -5,8 +5,10 @@ Dependency: FANN (Fast Artifical Neural Network) library installed and on path. 
 
 For documentation on use, please read comments in include files. Docs to come soon.
 
-## Installation Instructions
-For now, clone library and make. Link to aadil_common.a in /lib and include all of /lib/include
+## Installation Instructions (As executable)
+1) Clone library
+2) CMake (mkdir cmake && cd cmake && cmake .. && make)
+3) Run Project (./execProject)
 
 ## ccea
 Cooperative Coevolutionary Algorithm
