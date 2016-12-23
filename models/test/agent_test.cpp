@@ -37,19 +37,6 @@ public:
   using Agent::queryState;
 };
 
-class MockFANN : public FANN::neural_net {
-public:
-  fann_type* run(fann_type* input) {
-    std::cout << "Running run\n";
-    input[0] = 1.0;
-    input[1] = 1.0;
-    
-    return input;
-  }
-
-  MockFANN() {};
-};
-
 TEST_F(AgentTest, testIsAgent) {
   Agent a;
 
@@ -79,11 +66,11 @@ TEST_F(AgentTest, testCreateStateAgent) {
   actors.push_back(&a);
   actors.push_back(&b);
 
-  std::vector<double> state = a.createState(actors);
+  std::vector<float> state = a.createState(actors);
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
-    EXPECT_TRUE(0.5 - state[0] < 0.1 && state[0] - 0.5 < 0.1);
+    EXPECT_FLOAT_EQ(1/sqrt(2), state[0]);
     EXPECT_EQ(0, state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
@@ -104,7 +91,7 @@ TEST_F(AgentTest, testCreateStatePOI) {
   actors.push_back(&a);
   actors.push_back(&b);
 
-  std::vector<double> state = a.createState(actors);
+  std::vector<float> state = a.createState(actors);
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
@@ -112,7 +99,7 @@ TEST_F(AgentTest, testCreateStatePOI) {
     EXPECT_EQ(0, state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
-    EXPECT_TRUE(2.5 - state[4] < 0.1 && state[4] - 2.5 < 0.1);
+    EXPECT_FLOAT_EQ(5 / sqrt(2), state[4]);
     EXPECT_EQ(0, state[5]);
     EXPECT_EQ(0, state[6]);
     EXPECT_EQ(0, state[7]);
@@ -129,11 +116,11 @@ TEST_F(AgentTest, testCreateStateMultipleAgents) {
   actors.push_back(&b);
   actors.push_back(&b);
 
-  std::vector<double> state = a.createState(actors);
+  std::vector<float> state = a.createState(actors);
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
-    EXPECT_TRUE(1 - state[0] < 0.1 && state[0] - 1 < 0.1);
+    EXPECT_FLOAT_EQ(sqrt(2), state[0]);
     EXPECT_EQ(0, state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
@@ -155,12 +142,12 @@ TEST_F(AgentTest, testCreateStateOrientation) {
   actors.push_back(&b);
   actors.push_back(&c);
 
-  std::vector<double> state = a.createState(actors);
+  std::vector<float> state = a.createState(actors);
 
   EXPECT_EQ(8, state.size());
   if (state.size() == 8) {
-    EXPECT_TRUE(0.5 -  state[0] < 0.1 && state[0] - 0.5 < 0.01);
-    EXPECT_TRUE(0.5 - state[1] < 0.1 && state[1] - 0.5 < 0.01);
+    EXPECT_FLOAT_EQ(1/sqrt(2), state[0]);
+    EXPECT_FLOAT_EQ(1/sqrt(2), state[1]);
     EXPECT_EQ(0, state[2]);
     EXPECT_EQ(0, state[3]);
     EXPECT_EQ(0, state[4]);
@@ -175,23 +162,4 @@ TEST_F(AgentTest, testDetermineReward) {
   std::vector<Actor*> actors;
   
   EXPECT_EQ(5, a.determineReward(actors,5));
-}
-
-TEST_F(AgentTest, testMove) {
-  Agent a;
-  a.setLocation(Location::createLoc(0,0));
-  
-  MockFANN net;
-  a.setPolicy(&net);
-  std::cout << "Mock address: " << &net << "\n";
-  std::vector<Actor*> actors;
-  actors.push_back(&a);
-
-  /*
-  a.move(actors);
-Something is up with my mock class TODO TODO
-  Location after = a.getLocation();
-
-  EXPECT_TRUE(Location::equals(after, Location::createLoc(1,1)));
-  */
 }

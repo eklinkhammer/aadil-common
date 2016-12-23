@@ -31,44 +31,30 @@ LocalAgent::LocalAgent(Location loc) : Agent(loc) {
   this->initNetwork();
 }
 
-LocalAgent::LocalAgent(Location loc, FANN::neural_net* startingNet) {
+LocalAgent::LocalAgent(Location loc, FANN_Wrapper* startingNet) {
   this->gApproximation = startingNet;
 }
 
 // Estimates global reward if agent had done one less step
 double LocalAgent::determineReward(std::vector<Actor*>& actors, double g) {
-  std::vector<double> state = this->createState(actors);
+  std::vector<float> state = this->createState(actors);
   state.push_back(0);
   state.push_back(0);
-
-  float input[10];
-  for (int i = 0; i < 10; i++) {
-    input[i] = (float) state[i];
-  }
   
-  fann_type* output = this->getApproximation()->run(input);
-  double counterfactual = (double) ((float) output[0]);
+  std::vector<float> output = this->getApproximation()->run(state);
+  double counterfactual = (double) (output[0]);
   return g - counterfactual;
 }
 
 void LocalAgent::receiveBroadcastG(double g, std::vector<Actor*>& actors) {
-  std::vector<double> state = this->createState(actors);
+  std::vector<float> state = this->createState(actors);
   Location previousCommand = this->getLastCommand();
-  state.push_back(previousCommand.x);
-  state.push_back(previousCommand.y);
+  state.push_back((float) (previousCommand.x));
+  state.push_back((float) (previousCommand.y));
 
-  float input[10];
-  for (int i = 0; i < 10; i++) {
-    input[i] = (float) state[i];
-  }
-
-  float output[1];
-  output[0] = (float) g;
-
-  fann_type* inputF  = (fann_type*) input;
-  fann_type* outputF = (fann_type*) output;
-
-  this->getApproximation()->train(inputF,outputF);
+  std::vector<float> output = {(float) g};
+  
+  this->getApproximation()->train(state,output);
 }
 
 void LocalAgent::initNetwork() {
@@ -76,10 +62,12 @@ void LocalAgent::initNetwork() {
   layers[0] = 10;
   layers[1] = 10;
   layers[2] = 1;
-  this->gApproximation = new FANN::neural_net(FANN::LAYER, 3, layers);
-  this->gApproximation->randomize_weights(-10,10);
+  FANN::neural_net* net = new FANN::neural_net(FANN::LAYER, 3, layers);
+  net->randomize_weights(-10,10);
+  FANN_Wrapper* wrapper = new FANN_Wrapper(net);
+  this->gApproximation = wrapper;
 }
 
-FANN::neural_net* LocalAgent::getApproximation() {
+FANN_Wrapper* LocalAgent::getApproximation() {
   return this->gApproximation;
 }

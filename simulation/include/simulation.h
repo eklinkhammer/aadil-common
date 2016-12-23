@@ -31,6 +31,7 @@
 #include "agent.h"
 #include <random>
 #include "roverDomain.h"
+#include "wrapper.h"
 
 class SimulationConfig {
  public:

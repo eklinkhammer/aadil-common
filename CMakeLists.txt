@@ -7,6 +7,8 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-g -Wall")
 set (CMAKE_MACOSX_RPATH 1)
 set (EXEC execProject)
+set (WRAPPER_DIR /Users/klinkhae/research/cpp_ws/fann-cpp-vector)
+
 configure_file(CMakeLists.txt.in
                googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -26,7 +28,7 @@ add_subdirectory (simulation)
 
 ## Create Executable
 add_executable(${EXEC} src/experiment.cpp)
-target_include_directories(${EXEC} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} include)
+target_include_directories(${EXEC} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} include ${WRAPPER_DIR}/include)
 target_link_libraries(${EXEC} fann)
 
 add_dependencies(${EXEC} ccea)
@@ -42,3 +44,4 @@ target_include_directories (${EXEC} PUBLIC simulation/include)
 target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/ccea/libccea.a)
 target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/models/libmodels.a)
 target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/simulation/libsimulation.a)
+target_link_libraries(${EXEC} ${WRAPPER_DIR}/cmake/libFANN_Wrapper.a)

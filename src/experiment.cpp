@@ -3,13 +3,13 @@
 // Experiment Parameters
 const int NUM_AGENTS = 10;
 const int NUM_POIS = 10;
-const double SIZE_WORLD = 10.0;
+const double SIZE_WORLD = 20.0;
 const double POI_RANGE_PERCENT_WORLD = 0.25;
-const int GENS = 1000;
+const int GENS = 100;
 const Reward r = Dpp;
 const int SIM_TIMESTEPS = 20;
 const int MIN_COUPLING = 1;
-const int MAX_COUPLING = 8;
+const int MAX_COUPLING = 2;
 const int STAT_RUNS = 20;
 
 // Network Config
@@ -73,17 +73,21 @@ int main() {
 
     for (int j = 0; j < GENS; j++) {
       ccea.runGeneration(&evaluator);
-      if (j % 100 == 0) {
+      /*if (j % 100 == 0) {
 	std::vector<double> score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
 	scores.push_back(score);
-      }
+	}*/
     }
-    
+
+    /*
     for (const auto score : scores) {
       std::cout << "(" << score[0] << "," << score[1] << ") ";
     }
     std::cout << "\n";
+    */
   }
+
+  actors[0]->getPolicy()->getNeuralNet()->save("agent.policy");
   return 0;
 }
 

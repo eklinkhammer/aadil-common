@@ -28,11 +28,11 @@
 
 class LocalAgentDpp : public LocalAgent {
  public:
-  double determineReward(std::vector<Actor*>&,double);
+  virtual double determineReward(std::vector<Actor*>&,double);
   
   LocalAgentDpp();
   LocalAgentDpp(Location);
-  LocalAgentDpp(Location,FANN::neural_net*);
+  LocalAgentDpp(Location,FANN_Wrapper*);
 };
 
 #endif

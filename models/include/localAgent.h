@@ -38,15 +38,15 @@ class LocalAgent : public Agent {
   
   LocalAgent();
   LocalAgent(Location);
-  LocalAgent(Location,FANN::neural_net*);
+  LocalAgent(Location,FANN_Wrapper*);
   
   void receiveBroadcastG(double,std::vector<Actor*>&);
 
-  FANN::neural_net* getApproximation();
+  FANN_Wrapper* getApproximation();
   
   
  private:
-  FANN::neural_net* gApproximation;
+  FANN_Wrapper* gApproximation;
   void initNetwork();
 };
 

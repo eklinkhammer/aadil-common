@@ -64,7 +64,8 @@ void Simulation::assignPolicies(std::vector<FANN::neural_net*> nets) {
   int net = 0;
   for (auto actor : this->getActors()) {
     if (actor->isAgent()) {
-      actor->setPolicy(nets[net]);
+      FANN_Wrapper* wrapper = new FANN_Wrapper(nets[net]);
+      actor->setPolicy(wrapper);
       net++;
     }
   }

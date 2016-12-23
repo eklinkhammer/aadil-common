@@ -30,6 +30,7 @@
 
 #include "fann.h"
 #include "fann_cpp.h"
+#include "wrapper.h"
 
 #include "location.h"
 
@@ -78,11 +79,11 @@ class Actor {
 
   virtual std::string toString() {return ""; };
   
-  void setPolicy(FANN::neural_net*);
-  FANN::neural_net* getPolicy();
+  void setPolicy(FANN_Wrapper*);
+  FANN_Wrapper* getPolicy();
  private:
   Location loc = Location::createLoc(0,0);
-  FANN::neural_net* policy;
+  FANN_Wrapper* policy;
 };
 
 #endif

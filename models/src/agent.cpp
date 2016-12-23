@@ -32,41 +32,17 @@ Agent::Agent(Location loc) : Actor(loc) {
 }
 
 void Agent::move(std::vector<Actor*>& actors) {
-  std::vector<double> state = this->createState(actors);
-
-  double* a = &state[0];
-
-  fann_type* input = (fann_type*) a;
-
-  FANN::neural_net* net = this->getPolicy();
-
-  
-  fann_type* output = net->run(input);
-  fann_type fSum = output[0] + output[1];
-
-  fSum = fSum == 0 ? 1 : fSum;
-  
-  double normX = (double) (output[0] / fSum);
-  double normY = (double) (output[1] / fSum);
+  std::vector<float> state = this->createState(actors);
+  std::vector<float> output = this->getPolicy()->run(state);
+  float x = output[0], y = output[1];
 
   // Neural network will always output a positive value between 0 and 1
-  normX = 2 * normX - 1;
-  normY = 2 * normY - 1;
-
+  // Scale so that all values between -1 and 1 are possible
+  x = 2 * x + 1;
+  y = 2 * y + 1;
+  
   Location current = this->getLocation();
-  Location move = Location::createLoc(normX, normY);
-  /*for (auto s : state) std::cout << s << " ";
-  std::cout << "\n";
-  std::cout << normX << ", " << normY << "\n";*/
-  if (rand() % 100 < 5) {
-    int x = rand() % 50;
-    int y = rand() % 50;
-    double xM = (double) x / (x + y);
-    double yM = (double) y / (x + y);
-    yM = rand() % 2 == 0 ? yM : yM * -1;
-    xM = rand() % 2 == 0 ? xM : xM * -1;
-    move = Location::createLoc(xM, yM);
-  }
+  Location move = Location::createLoc(x, y);
   this->setLastCommand(move);
   this->setLocation(Location::addLocations(current, move));
 }
@@ -75,8 +51,8 @@ double Agent::determineReward(std::vector<Actor*>& actors, double G) {
   return G;
 }
 
-std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
-  std::vector<double> states;
+std::vector<float> Agent::createState(std::vector<Actor*>& visibleActors) {
+  std::vector<float> states;
 
   for (int i = 0; i < 8; i++) {
     states.push_back(0.0);
@@ -104,7 +80,7 @@ std::vector<double> Agent::createState(std::vector<Actor*>& visibleActors) {
       val = p->getValue();
     }
 
-    states[quad] += val / (distance * distance);
+    states[quad] += (float) (val / (distance));
   }
   
   return states;

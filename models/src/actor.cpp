@@ -51,10 +51,10 @@ Actor::Actor(Location location) {
   this->loc = location;
 }
 
-void Actor::setPolicy(FANN::neural_net* net) {
+void Actor::setPolicy(FANN_Wrapper* net) {
   this->policy = net;
 }
 
-FANN::neural_net* Actor::getPolicy() {
+FANN_Wrapper* Actor::getPolicy() {
   return this->policy;
 }

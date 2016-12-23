@@ -48,7 +48,7 @@ class Agent : public Actor {
   Location getLastCommand();
   void setLastCommand(Location);
  protected:
-  std::vector<double> createState(std::vector<Actor*>&);
+  std::vector<float> createState(std::vector<Actor*>&);
   virtual Location queryState(std::vector<double>) { return Location::createLoc(0,0); };
   Location lastCommand = Location::createLoc(0,0);
 };
