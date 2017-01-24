@@ -6,10 +6,9 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-g -Wall")
 set (CMAKE_MACOSX_RPATH 1)
 
-set (WRAPPER_DIR /Users/klinkhae/research/cpp_ws/fann-cpp-vector)
 set (SOURCE src/simNetEval.cpp src/simulation.cpp)
 set (LIB_NAME simulation)
-set (INCLUDE_DIRS ../ccea/include ../models/include ${WRAPPER_DIR}/include include)
+set (INCLUDE_DIRS ../ccea/include ../models/include ../fann-cpp-vector/include include)
 
 find_package(fann)
  

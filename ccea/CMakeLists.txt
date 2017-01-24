@@ -7,11 +7,10 @@ set (CMAKE_CXX_FLAGS "-g -Wall")
 set (CMAKE_MACOSX_RPATH 1)
 
 set (LIB_NAME ccea)
-set (WRAPPER_DIR /Users/klinkhae/research/cpp_ws/fann-cpp-vector)
 set (SOURCE src/ccea.cpp)
 set (TEST_SOURCE test/ccea_test.cpp)
 set (TEST_EXEC runUnitTestsCCEA)
-set (INCLUDE_DIRS ${WRAPPER_DIR}/include include)
+set (INCLUDE_DIRS ../fann-cpp-vector/include include)
 set (TEST_LINK_DIRS gtest gtest_main fann ${LIB_NAME})
 
 find_package(fann)
@@ -23,4 +22,5 @@ target_include_directories (${LIB_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${INC
 enable_testing()
 add_executable(${TEST_EXEC} ${TEST_SOURCE})
 target_link_libraries(${TEST_EXEC} ${TEST_LINK_DIRS})
+target_link_libraries(${TEST_EXEC} ${CMAKE_BINARY_DIR}/fann-cpp-vector/libfann-cpp-vector.a)
 add_test(NAME gtest-${LIB_NAME} COMMAND ${TEST_EXEC})

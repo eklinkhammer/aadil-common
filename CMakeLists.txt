@@ -6,9 +6,14 @@ enable_language(CXX)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-g -Wall")
 set (CMAKE_MACOSX_RPATH 1)
-set (EXEC execProject)
-set (WRAPPER_DIR /Users/klinkhae/research/cpp_ws/fann-cpp-vector)
 
+
+set (EXEC execProject)
+set (EXTERNAL_DEPS fann yaml-cpp)
+set (INTERNAL_DEPS ccea models simulation fann-cpp-vector)
+set (INCLUDE_DIRS include ccea/include models/include simulation/include fann-cpp-vector/include)
+
+## Google Test Setup
 configure_file(CMakeLists.txt.in
                googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -19,30 +24,25 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
                  ${CMAKE_BINARY_DIR}/googletest-build)
 
+## Find external libraries
 find_package(fann)
 find_package(yaml-cpp)
  
-## Create Libraries
+## Add all subdirectories that have their own cmakes
 add_subdirectory (ccea)
 add_subdirectory (models)
 add_subdirectory (simulation)
+add_subdirectory (fann-cpp-vector)
 
 ## Create Executable
 add_executable(${EXEC} src/experiment.cpp src/runner.cpp)
-target_include_directories(${EXEC} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} include ${WRAPPER_DIR}/include)
-target_link_libraries(${EXEC} fann yaml-cpp)
+target_include_directories(${EXEC} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${INCLUDE_DIRS})
+target_link_libraries(${EXEC} ${EXTERNAL_DEPS})
 
-add_dependencies(${EXEC} ccea)
-add_dependencies(${EXEC} models)
-add_dependencies(${EXEC} simulation)
-
-## Include libraries
-target_include_directories (${EXEC} PUBLIC ccea/include)
-target_include_directories (${EXEC} PUBLIC models/include)
-target_include_directories (${EXEC} PUBLIC simulation/include)
+add_dependencies(${EXEC} ${INTERNAL_DEPS})
 
 ## Link created libraries
 target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/ccea/libccea.a)
 target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/models/libmodels.a)
 target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/simulation/libsimulation.a)
-target_link_libraries(${EXEC} ${WRAPPER_DIR}/cmake/libFANN_Wrapper.a)
+target_link_libraries(${EXEC} ${CMAKE_BINARY_DIR}/fann-cpp-vector/libfann-cpp-vector.a)
