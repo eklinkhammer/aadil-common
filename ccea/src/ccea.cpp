@@ -179,13 +179,13 @@ FANN::neural_net* CCEA::mutate(FANN::neural_net* net) {
   
   for (int mutationCount = 0; mutationCount < numberMutations; mutationCount++) {
     int index = rand() % totalWeights;
-    fann_type current = connections[index].weight;
+    //fann_type current = connections[index].weight;
     
     double randomFactor = (double) rand() / (RAND_MAX);
     int sign = rand() % 2 ? 1 : -1;
     double val = sign * randomFactor * this->cceaConfig.magnitudeOfMutation;
     
-    connections[index].weight += (fann_type)val * current;
+    connections[index].weight = val;
   }
   
   newNet->set_weight_array(connections, totalWeights);

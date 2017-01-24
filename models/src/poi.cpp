@@ -81,7 +81,9 @@ double POI::determineReward(std::vector<Actor*>& actors, double unused) {
     reward += (this->value / distances[d]);
   }
 
-  return reward;
+  this->score = this->score > reward ? this->score : reward;
+  
+  return this->score;
 }
 
 void POI::init(double val, double min, double max, double numAgents) {

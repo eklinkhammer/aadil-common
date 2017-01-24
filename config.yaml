@@ -1,0 +1,28 @@
+debug: true
+
+experiment:
+    number_agents: 4
+    number_pois: 4
+    size_world: 10
+    poi_range_percent_world_size: 0.2
+    generations: 1000
+    reward: G
+    simulation_timesteps: 20
+    min_coupling: 1
+    max_coupling: 1
+
+network:
+    number_layers: 3
+    input_layer: 8
+    hidden_layer: 9
+    output_layer: 2
+    random_weights: true
+    random_min: -10
+    random_max: 10
+
+ccea:
+    number_pools: 4
+    number_networks: 10
+    percent_to_mutate: 0.5
+    mag_mutation: 10
+    percent_best_chosen: 0.4

@@ -1,97 +1,5 @@
 #include "experiment.h"
 
-// Experiment Parameters
-const int NUM_AGENTS = 10;
-const int NUM_POIS = 10;
-const double SIZE_WORLD = 20.0;
-const double POI_RANGE_PERCENT_WORLD = 0.25;
-const int GENS = 100;
-const Reward r = Dpp;
-const int SIM_TIMESTEPS = 20;
-const int MIN_COUPLING = 1;
-const int MAX_COUPLING = 2;
-const int STAT_RUNS = 20;
-
-// Network Config
-const FANN::network_type_enum NET_TYPE = FANN::LAYER;
-const unsigned int NUM_LAYERS = 3;
-const unsigned int INPUT_LAYER = 8;
-const unsigned int HIDDEN_LAYER = 9;
-const unsigned int OUTPUT_LAYER = 2;
-unsigned int LAYERS[NUM_LAYERS] = {INPUT_LAYER, HIDDEN_LAYER, OUTPUT_LAYER};
-const bool RANDOM_WEIGHTS = true;
-const double RANDOM_MIN = -10;
-const double RANDOM_MAX = 10;
-
-// CCEA Config
-const unsigned int NUMBER_POOLS = (unsigned int) NUM_AGENTS;
-const unsigned int NUMBER_NETWORKS = 10;
-const double PERCENT_TO_MUTATE = 0.4;
-const double MAG_MUTATION = 0.75;
-const double PERCENT_BEST_CHOSEN = 0.9;
-
-
-int main() {
-
-  // Bootstrapping both policies and approximations  
-  // Initialize set of actors
-  std::vector<Actor*> actors;
-  addAgents(actors,r,NUM_AGENTS);
-  addPois(actors, NUM_POIS);
-
-  // Initialize World
-  RoverDomain rWorld(actors, Location::createLoc(SIZE_WORLD, SIZE_WORLD));
-  setWorld(actors,r,&rWorld);
-
-  // Initialize Simulation
-  SimulationConfig simConfig;
-  simConfig.timesteps = SIM_TIMESTEPS;
-  simConfig.actors = actors;
-  simConfig.w = &rWorld;
-
-  std::vector<int> coupling = couplingArray(MAX_COUPLING);
-  
-  Simulation sim(simConfig);
-  SimNetEval evaluator (&sim);
-
-  NetworkConfig netConfig = createNetworkConfig(NET_TYPE, NUM_LAYERS, LAYERS, RANDOM_WEIGHTS, RANDOM_MIN, RANDOM_MAX);
-  CCEAConfig cceaConfig = createCCEAConfig(NUMBER_POOLS, NUMBER_NETWORKS, PERCENT_TO_MUTATE, MAG_MUTATION, PERCENT_BEST_CHOSEN);
-  
-  CCEA ccea(netConfig, cceaConfig);
-
-  
-  std::vector<std::vector<std::vector<double> > > gValues;
-  for (int i = MIN_COUPLING; i < coupling.size(); i++) {
-
-    std::vector<std::vector<double> >scores;
-    for (auto actor : actors) {
-      if (actor->isPOI()) {
-	POI* poi = (POI*) actor;
-	poi->init(1, 0.1, SIZE_WORLD*POI_RANGE_PERCENT_WORLD, coupling[i]);
-      }
-    }
-
-    for (int j = 0; j < GENS; j++) {
-      ccea.runGeneration(&evaluator);
-      /*if (j % 100 == 0) {
-	std::vector<double> score = statisticalRuns(ccea, evaluator, STAT_RUNS, &rWorld);
-	scores.push_back(score);
-	}*/
-    }
-
-    /*
-    for (const auto score : scores) {
-      std::cout << "(" << score[0] << "," << score[1] << ") ";
-    }
-    std::cout << "\n";
-    */
-  }
-
-  actors[0]->getPolicy()->getNeuralNet()->save("agent.policy");
-  return 0;
-}
-
-//**************** Helper Functions **************/
 std::vector<int> couplingArray(int n) {
   std::vector<int> coupling;
   for (int i = 1; i <= n; i++) {
@@ -194,4 +102,22 @@ std::vector<double> statisticalRuns(CCEA ccea, SimNetEval simNetEval, int runs, 
   result.push_back(average);
   result.push_back(std_dv);
   return result;
+}
+
+void setPOICoupling(std::vector<Actor*>& actors, double value, double minRange, double maxRange, int agentsRequired) {
+  for (auto actor : actors) {
+    if (actor->isPOI()) {
+      POI* poi = (POI*) actor;
+      poi->init(value, minRange, maxRange, agentsRequired);
+    }
+  }
+}
+
+Reward stringToReward(std::string str) {
+  if (str == "G") return G;
+  if (str == "D") return D;
+  if (str == "LocalD") return LocalD;
+  if (str == "Dpp") return Dpp;
+  if (str == "LocalDpp") return LocalDpp;
+  else return G;
 }

@@ -20,6 +20,7 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
                  ${CMAKE_BINARY_DIR}/googletest-build)
 
 find_package(fann)
+find_package(yaml-cpp)
  
 ## Create Libraries
 add_subdirectory (ccea)
@@ -27,9 +28,9 @@ add_subdirectory (models)
 add_subdirectory (simulation)
 
 ## Create Executable
-add_executable(${EXEC} src/experiment.cpp)
+add_executable(${EXEC} src/experiment.cpp src/runner.cpp)
 target_include_directories(${EXEC} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} include ${WRAPPER_DIR}/include)
-target_link_libraries(${EXEC} fann)
+target_link_libraries(${EXEC} fann yaml-cpp)
 
 add_dependencies(${EXEC} ccea)
 add_dependencies(${EXEC} models)

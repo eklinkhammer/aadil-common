@@ -13,8 +13,18 @@
 #include "ccea.h"
 
 #include <vector>
+#include <string>
+
+
 
 enum Reward {G, D, LocalD, Dpp, LocalDpp};
+
+/*
+  Parses the inputed string to create a reward. The default reward is G.
+  The expected strings are exactly the constructor names. This function used to 
+    aid in parsing of yaml files so that enum can be used everywhere else.
+ */
+Reward stringToReward(std::string);
 
 Actor* getAppropriateActor(Reward);
 
@@ -47,4 +57,5 @@ CCEAConfig createCCEAConfig(unsigned int, unsigned int, double, double, double);
 
 NetworkConfig createNetworkConfig(FANN::network_type_enum, unsigned int, unsigned int*, bool, double, double);
 
+void setPOICoupling(std::vector<Actor*>&,double,double,double,int);
 #endif

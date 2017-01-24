@@ -37,9 +37,10 @@ void Agent::move(std::vector<Actor*>& actors) {
   float x = output[0], y = output[1];
 
   // Neural network will always output a positive value between 0 and 1
+
   // Scale so that all values between -1 and 1 are possible
-  x = 2 * x + 1;
-  y = 2 * y + 1;
+  x = 2 * x - 1;
+  y = 2 * y - 1;
   
   Location current = this->getLocation();
   Location move = Location::createLoc(x, y);
@@ -66,11 +67,12 @@ std::vector<float> Agent::createState(std::vector<Actor*>& visibleActors) {
     if (!actor->isAgent() && !actor->isPOI()) continue;
     
     Location other = actor->getLocation();
-    double distance = Location::distance(loc, other);
+    
+    //double distance = Location::distance(loc, other);
 
-    if (distance < 1) {
-      distance = 1;
-    }
+    /*    if (distance < 1) {
+	  distance = 1;
+	  }*/
     int quad = Location::quadrant(loc, other) - 1;
     double val = 1.0;
     
@@ -80,7 +82,7 @@ std::vector<float> Agent::createState(std::vector<Actor*>& visibleActors) {
       val = p->getValue();
     }
 
-    states[quad] += (float) (val / (distance));
+    states[quad] += (float) 1;//(val / (distance));
   }
   
   return states;

@@ -64,11 +64,13 @@ class POI : public Actor {
   void init(double, double, double, double);
 
   double getValue() { return this->value; };
+  double getScore() { return this->score; };
  private:
   double value;
   double minScoringDistance;
   double maxScoringDistance;
   double numberRequiredAgents;
+  double score;
 };
 
 #endif
